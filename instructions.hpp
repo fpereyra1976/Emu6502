@@ -4,6 +4,11 @@
 #include<vector>
 #include <initializer_list>
 
+#include "common.hpp"
+#include "registers.hpp"
+#include "exceptions.hpp"
+#include "memory.hpp"
+
 namespace CPU6502{
     class Executer{   
         public:
@@ -22,7 +27,7 @@ namespace CPU6502{
             throw CPUInstructionInvalidOperation();
             return Byte(0);
         }
-    }
+    };
 
     class InmediatExcecuter :public Executer{
         public:
@@ -30,6 +35,11 @@ namespace CPU6502{
             regs._TMP = mem.Get(regs.PC);
             return Byte(0);
         }
-    }
+    };
+
+    class Instruction {
+        private:
+            Byte opcode;
+    };
 };
 #endif

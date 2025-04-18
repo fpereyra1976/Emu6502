@@ -6,82 +6,11 @@
 #include"common.hpp"
 #include"memory.hpp"
 #include"instructions.hpp"
+#include"exceptions.hpp"
 
 
 namespace CPU6502{   
     using InstructionSet = std::map<Byte, Instruction>;
-    
-    class CPUException :  public std::exception{
-        public:
-        const char* what() const noexcept override {
-            return "CPUException";
-         }
-    };
-
-    class CPUInvalidOpCodeExcepcion : public CPUException {
-        public:
-        const char* what() const noexcept override {
-            return "CPUInvalidOpCodeExcepcion";
-         }
-    };
-
-    class CPUCyleExecutionException: public CPUException {
-        public:
-        const char* what() const noexcept override {
-            return "CPUCyleExecutionException";
-         }
-    };
-
-    class CPUCInvalidInstructionTypeException: public CPUException {
-        public:
-        const char* what() const noexcept override {
-            return "CPUCInvalidInstructionTypeException";
-         }
-    };
-
-    class CPUCOnTickException: public CPUException {
-        public:
-        const char* what() const noexcept override {
-            return "CPUCOnTickException";
-         }
-    };
-
-    class CPUInvalidInstructionTypeException: public CPUException {
-        public:
-        const char* what() const noexcept override {
-            return "CPUInvalidInstructionTypeException";
-         }
-    };
-
-    class CPUNoOperandsImplicitTypeException: public CPUException {
-        public:
-        const char* what() const noexcept override {
-            return "CPUNoOperandsImplicitTypeException";
-         }
-    };
-
-    class CPUNoFetchValueOnInmediatTypeException: public CPUException {
-        public:
-        const char* what() const noexcept override {
-            return "CPUNoFetchValueOnInmediatTypeException";
-         }
-    };
-
-    class Registers{
-        public:
-        Byte    _IR;
-        Byte    _TMP;
-        Byte    _ADL;
-        Byte    _ADH;
-        Byte    _DL;
-        Byte    _BL;
-        Byte    A;
-        Byte    X;
-        Byte    Y;
-        Byte    P;
-        Word    SP;
-        Word    PC;
-    };
     
     enum class ControlUnitStatus : uint16_t { 
         FETCHING_OP_CODE        =   0x0001, 
@@ -94,7 +23,6 @@ namespace CPU6502{
         EXECUTE                 =   0x0128
     };
 
-
     class ControlUnit{
         private:
             ControlUnitStatus status;
@@ -102,15 +30,15 @@ namespace CPU6502{
         public:
             ControlUnit(){
                 this->status = ControlUnitStatus::FETCHING_OP_CODE;
-
             }        
+            Byte ExecuteCycle(Memory &mem, Registers & registers);
+            
             Byte FetchOpCode(Memory &mem, Registers &registers){
-                return Byte(0x00;)
+                return Byte(0x00);
             }
             Byte FetchOperand(Memory &mem, Registers &registers){
-                return Byte(0x00;)
+                return Byte(0x00);
             }
-
     };
 
     class CPU{
@@ -126,13 +54,16 @@ namespace CPU6502{
 
             void Reset(){
             }
-            int OnTick(){
+
+            Byte OnTick(){
                 try{
-                    this->controlUnit.ExecuteCycle(this->registers,this->memory);
+                    // Byte ExecuteCycle(Memory &mem, Registers & registers){
+                    Byte b = this->controlUnit.ExecuteCycle(this->memory,this->registers);
+                    return b;
                 }catch(CPUException &e){
                     throw CPUCOnTickException();
                 }
-                return 0; // TODO
+                return Byte(0); // TODO
             }
     };
 

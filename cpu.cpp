@@ -2,7 +2,7 @@
 
 namespace CPU6502{
 
-void ControlUnit::ExecuteCycle(Registers &registers, Memory &memory){
+Byte ControlUnit::ExecuteCycle(Memory &memory,Registers &registers){
     while(1){
         switch(this->status){
             case ControlUnitStatus::FETCHING_OP_CODE: {} break;
@@ -15,5 +15,6 @@ void ControlUnit::ExecuteCycle(Registers &registers, Memory &memory){
             default: {} break;
         }
     }
+    return Byte(0);
 }
 } // end namespace
