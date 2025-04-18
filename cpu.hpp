@@ -46,6 +46,26 @@ namespace CPU6502{
          }
     };
 
+    class CPUInvalidInstructionTypeException: public CPUException {
+        public:
+        const char* what() const noexcept override {
+            return "CPUInvalidInstructionTypeException";
+         }
+    };
+
+    class CPUNoOperandsImplicitTypeException: public CPUException {
+        public:
+        const char* what() const noexcept override {
+            return "CPUNoOperandsImplicitTypeException";
+         }
+    };
+
+    class CPUNoFetchValueOnInmediatTypeException: public CPUException {
+        public:
+        const char* what() const noexcept override {
+            return "CPUNoFetchValueOnInmediatTypeException";
+         }
+    };
 
     class Registers{
         public:
@@ -54,6 +74,7 @@ namespace CPU6502{
         Byte    _ADL;
         Byte    _ADH;
         Byte    _DL;
+        Byte    _BL;
         Byte    A;
         Byte    X;
         Byte    Y;
@@ -62,44 +83,34 @@ namespace CPU6502{
         Word    PC;
     };
     
-    enum class ControlUnitStatus : uint8_t { 
-        FETCHING_OP_CODE        =   0x01, 
-        FETCHING_OPERAND        =   0x02, 
-        FETCHING_MEMORY         =   0x04, 
-        WRITING_MEMORY          =   0x08,
-        CHANGING_MEMORY_PG      =   0x16,
-        INDEXING_MEMORY_ADDRESS =   0x32,
-        EXECUTE                 =   0x64
+    enum class ControlUnitStatus : uint16_t { 
+        FETCHING_OP_CODE        =   0x0001, 
+        FETCHING_OPERAND        =   0x0002, 
+        FETCHING_OPERAND_VALUE  =   0x0004, 
+        FETCHING_MEMORY         =   0x0008,
+        WRITING_MEMORY          =   0x0016,
+        CHANGING_MEMORY_PG      =   0x0032,
+        INDEXING_MEMORY_ADDRESS =   0x0064,
+        EXECUTE                 =   0x0128
     };
 
 
     class ControlUnit{
         private:
             ControlUnitStatus status;
-            Instruction instruction;
-            Byte instructionStep;
-            InstructionSet instructions;
             
         public:
             ControlUnit(){
                 this->status = ControlUnitStatus::FETCHING_OP_CODE;
-                this->instruction = INS_NOP_INSTRUCTION_IMPLICIT;
-                this->instructionStep = 0;
-                this->instructions = {
-                    {INS_NOP_INSTRUCTION_IMPLICIT.Code(),INS_NOP_INSTRUCTION_IMPLICIT},
-                    {INS_LDA_INSTRUCTION_INMEDIATE.Code(),INS_LDA_INSTRUCTION_INMEDIATE},
-                    {INS_LDA_INSTRUCTION_ZEROPAGE.Code(),INS_LDA_INSTRUCTION_ZEROPAGE},
-                    {INS_LDA_INSTRUCTION_ZEROPAGE_INDEX_X.Code(),INS_LDA_INSTRUCTION_ZEROPAGE_INDEX_X},
-                    {INS_LDA_INSTRUCTION_ABSOLUTE.Code(),INS_LDA_INSTRUCTION_ABSOLUTE},
-                    {INS_LDA_INSTRUCTION_ABSOLUTE_INDEX_X.Code(),INS_LDA_INSTRUCTION_ABSOLUTE_INDEX_X},
-                    {INS_LDA_INSTRUCTION_ABSOLUTE_INDEX_Y.Code(),INS_LDA_INSTRUCTION_ABSOLUTE_INDEX_Y},
-                    {INS_LDA_INSTRUCTION_INDIRECT_INDEX_X.Code(),INS_LDA_INSTRUCTION_INDIRECT_INDEX_X},
-                    {INS_LDA_INSTRUCTION_INDIRECT_INDEX_Y.Code(),INS_LDA_INSTRUCTION_INDIRECT_INDEX_Y}
-                };
+
             }        
-            Instruction FetchOpCode(Memory &mem, Registers &registers);
-            ControlUnitStatus NextStatus(InstructionStep step);
-            void ExecuteCycle(Registers &registers, Memory &memory);
+            Byte FetchOpCode(Memory &mem, Registers &registers){
+                return Byte(0x00;)
+            }
+            Byte FetchOperand(Memory &mem, Registers &registers){
+                return Byte(0x00;)
+            }
+
     };
 
     class CPU{
