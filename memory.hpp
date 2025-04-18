@@ -9,11 +9,11 @@ namespace CPU6502{
         private:
             Byte data[65536];
         public:
-            Byte& Get(Word p){
+            Byte &Get(Word p){
                 // No validation needed. (?)
                 return data[p];
             }
-            void Set(Word p,Byte v){
+            void Set(Word p,Byte &v){
                 // No validation needed. (?)
                 data[p] = v;
             }

@@ -7,12 +7,13 @@ namespace CPU6502{
 
 class Registers{
     public:
+    Word    _TMP;
+    Word    _AB;
+    Byte    _DB;
     Byte    _IR;
-    Byte    _TMP;
     Byte    _ADL;
     Byte    _ADH;
-    Byte    _DL;
-    Byte    _BL;
+    Bit     _RW;
     Byte    A;
     Byte    X;
     Byte    Y;
@@ -20,6 +21,5 @@ class Registers{
     Word    SP;
     Word    PC;
 };
-
 }
 #endif

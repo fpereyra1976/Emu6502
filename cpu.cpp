@@ -17,4 +17,5 @@ Byte ControlUnit::ExecuteCycle(Memory &memory,Registers &registers){
     }
     return Byte(0);
 }
+
 } // end namespace
