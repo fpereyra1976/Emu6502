@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Wextra -O2
 
 # Archivos fuente y objetos
-SRC = main.cpp cpu.cpp instructions.cpp
+SRC = main.cpp cpu.cpp instructions.cpp computer.cpp
 OBJ = $(SRC:.cpp=.o)
 
 # Nombre del ejecutable
