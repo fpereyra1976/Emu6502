@@ -2,6 +2,8 @@
 #define __INSTRUCTION_HPP_
 
 #include<vector>
+#include<map>
+
 #include <initializer_list>
 
 #include "common.hpp"
@@ -22,8 +24,9 @@ namespace CPU6502{
     };
     
     enum class OperationType : u_int8_t {
-        FetchOpcode = 0x01,
-        FetchOperand = 0x02
+        Reset           = 0x00,
+        FetchOpcode     = 0x01,
+        FetchOperand    = 0x02
     };
 
     class Operation{
@@ -37,12 +40,15 @@ namespace CPU6502{
         constexpr OperationTarget getTarget() const { return target; }   
     };
     
+    constexpr Operation RESET(OperationType::Reset, OperationTarget::Nil);
     constexpr Operation FETCH_OPCODE(OperationType::FetchOpcode, OperationTarget::Nil);
     constexpr Operation FETCH_OPERAND_A(OperationType::FetchOperand, OperationTarget::A);
     constexpr Operation FETCH_OPERAND_X(OperationType::FetchOperand, OperationTarget::X);
     constexpr Operation FETCH_OPERAND_Y(OperationType::FetchOperand, OperationTarget::Y);
     constexpr Operation FETCH_OPERAND_ADL(OperationType::FetchOperand, OperationTarget::ADL);
     constexpr Operation FETCH_OPERAND_ADH(OperationType::FetchOperand, OperationTarget::ADH);
+
+    constexpr Operation JUMP(OperationType::FetchOperand, OperationTarget::ADH);
     
     class Instruction {
         private:
@@ -55,6 +61,11 @@ namespace CPU6502{
             Byte getOpcode() const { return opcode; }
             const std::vector<Operation>& getOperations() const { return operations; }
     };
+
+    const Instruction RESET_SIGNAL = Instruction(
+        0x00, // RESET
+        { RESET }
+    );
 
     const Instruction LDA_IMMEDIATE = Instruction(
         0xA9, // opcode de LDA #immediate

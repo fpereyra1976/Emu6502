@@ -23,15 +23,47 @@ namespace CPU6502{
         // EXECUTE                 =   0x80
     };
 
-    class ControlUnit{
+    class CPU{
         private:
             ControlUnitStatus status;
-            
+            Registers registers;
+            Memory memory;
+
         public:
-            ControlUnit(){
-                this->status = ControlUnitStatus::FETCHING_OP_CODE;
-            }        
-            Byte ExecuteCycle(Memory &memory, Registers & registers){
+            CPU(Memory &memory){
+                this->memory = memory;
+            }
+
+            Byte Reset(){
+                this->registers._IR = 0x00;
+                this->registers._RW = Bit::On; // READ
+
+                this->registers._AB = 0xfffc;
+                this->registers._DB = this->memory.Get(this->registers._AB);
+                this->registers._ADL = this->registers._DB;
+
+                this->registers._AB = 0xfffd;
+                this->registers._DB = this->memory.Get(this->registers._AB);
+                this->registers._ADH = this->registers._DB;
+
+                this->registers._AB = (this->registers._ADH << 8) | this->registers._ADL;
+                this->registers._DB = this->memory.Get(this->registers._AB);
+                this->registers.PC = this->registers._DB;
+                
+                return 0x00;
+            }
+
+            Byte OnTick(){
+                try{
+                    Byte b = this->ExecuteCycle();
+                    return b;
+                }catch(CPUException &e){
+                    throw CPUCOnTickException();
+                }
+                return Byte(0); // TODO
+            }
+
+            Byte ExecuteCycle(){
                 while(1){
                     switch(this->status){
                         case ControlUnitStatus::FETCHING_OP_CODE: {} break;
@@ -47,75 +79,52 @@ namespace CPU6502{
                 return Byte(0);
             }
             
-            Byte FetchOpcode(Memory &memory, Registers &registers){
-                registers._RW = Bit::Off;
-                registers._AB = registers.PC;
-                registers._DB = memory.Get(registers._AB);
-                registers._IR = registers._DB;
-                registers.PC++;
-                return  registers._IR;
+            Byte FetchOpcode(){
+                this->registers._RW = Bit::On;
+                this->registers._AB = this->registers.PC;
+                this->registers._DB = this->memory.Get(registers._AB);
+                this->registers._IR = this->registers._DB;
+                this->registers.PC++;
+                return  this->registers._IR;
             }
 
-            Byte FetchOperand(Memory &memory, Registers &registers,OperationTarget tg){
-                registers._RW = Bit::Off;
-                registers._AB = registers.PC;
-                registers._DB = memory.Get(registers._AB);
+            Byte FetchOperand(OperationTarget tg){
+                this->registers._RW = Bit::On;
+                this->registers._AB = this->registers.PC;
+                this->registers._DB = this->memory.Get(registers._AB);
                 switch(tg){
+                    case OperationTarget::Nil:{
+                        // To Do May not be used
+                    } break;
                     case OperationTarget::A:{
                         // Immediate
-                        registers.A = registers._DB;
+                        this->registers.A = this->registers._DB;
                     } break;
                     case OperationTarget::X:{
                         // Immediate
-                        registers.Y = registers._DB;
+                        this->registers.X = this->registers._DB;
                     } break;
                     case OperationTarget::Y:{
                         // immediate
-                        registers.Y = registers._DB;
+                        this->registers.Y = this->registers._DB;
                     } break;
                     case OperationTarget::TMP:{}
-                        registers._TMP = (0x00 << 8 ) | registers._DB;
+                        // To Do May not be used
+                        this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
                     break;
                     case OperationTarget::ADL:{}
                         // Zeropage, Absolute, Indirect
-                        registers._ADL = registers._DB;
-                        registers._TMP = (0x00 << 8 ) | registers._DB;
+                        this->registers._ADL = registers._DB;
+                        this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
                     break;
                     case OperationTarget::ADH:{}
                         // Absolute
-                        registers._ADH = registers._DB;
-                        registers._TMP = (registers._ADH << 8)|registers._ADL;
+                        this->registers._ADH = this->registers._DB;
+                        this->registers._TMP = (this->registers._ADH << 8)|this->registers._ADL;
                     break;
-                    defaul: {}break;
                 }
-                registers.PC++;
-                return registers._DB;
-            }
-    };
-
-    class CPU{
-        private:
-            ControlUnit controlUnit;
-            Registers registers;
-            Memory memory;
-
-        public:
-            CPU(Memory &memory){
-                this->memory = memory;
-            }
-
-            void Reset(){
-            }
-
-            Byte OnTick(){
-                try{
-                    // Byte ExecuteCycle(Memory &mem, Registers & registers){
-                    Byte b = this->controlUnit.ExecuteCycle(this->memory,this->registers);
-                    return b;
-                }catch(CPUException &e){
-                    throw CPUCOnTickException();
-                }
-                return Byte(0); // TODO
+                this->registers.PC++;
+                return this->registers._DB;
             }
     };
 
