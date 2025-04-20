@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../cpu.hpp"
+#include "cpu.hpp"
 
 TEST(CPU, FetchOpcode) {
     // Given

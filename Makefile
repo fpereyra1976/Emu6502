@@ -1,8 +1,9 @@
 CXX = g++
-CXXFLAGS = -g -std=c++14 -march=native -mtune=native
+CXXFLAGS = -Iinclude -g -std=c++14 -march=native -mtune=native
 
 BUILD_DIR = build
-SRC_DIR = .
+SRC_DIR = ./src
+INCLUDE_DIR = ./include
 TEST_DIR = tests
 
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
