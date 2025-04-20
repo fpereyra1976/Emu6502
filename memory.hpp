@@ -1,6 +1,8 @@
 #ifndef __MEMORY_HPP_
 #define __MEMORY_HPP_
 
+#include<iostream>
+
 #include"common.hpp"
 
 namespace CPU6502{ 
@@ -21,11 +23,11 @@ namespace CPU6502{
 
             Byte &Get(Word p){
                 // No validation needed. (?)
-                return data[p];
+                return this->data[p];
             }
             void Set(Word p,Byte &v){
                 // No validation needed. (?)
-                data[p] = v;
+                this->data[p] = v;
             }
 
             void Initialise(){

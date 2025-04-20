@@ -67,6 +67,11 @@ namespace CPU6502{
         { RESET }
     );
 
+    const Instruction NOP_IMPLICIT = Instruction(
+        0xEA, // opcode de LDA #immediate
+        { FETCH_OPCODE }
+    );
+
     const Instruction LDA_IMMEDIATE = Instruction(
         0xA9, // opcode de LDA #immediate
         { FETCH_OPCODE, FETCH_OPERAND_A }

@@ -26,10 +26,11 @@ namespace CPU6502{
     class CPU{
         private:
             ControlUnitStatus status;
-            Registers registers;
             Memory memory;
 
         public:
+            Registers registers;
+
             CPU(Memory &memory) : status(ControlUnitStatus::FETCHING_OP_CODE), memory(memory) {}
             Byte Reset();
             Byte OnTick();
