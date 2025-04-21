@@ -1,10 +1,10 @@
-CXX = g++
-CXXFLAGS = -Iinclude -g -std=c++14 -march=native -mtune=native
-
 BUILD_DIR = build
 SRC_DIR = ./src
 INCLUDE_DIR = ./include
 TEST_DIR = tests
+
+CXX = g++
+CXXFLAGS = -I$(INCLUDE_DIR) -g -std=c++14 -march=native -mtune=native
 
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
 SRC := $(filter-out $(TEST_DIR)/%, $(SRC))
@@ -27,7 +27,7 @@ TARGET = cpu
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) main.cpp -o $@ $^
 
 check: $(TEST_BIN)
 	@echo "\033[1;36m[Ejecutando tests]\033[0m"

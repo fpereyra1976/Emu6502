@@ -6,8 +6,14 @@ TEST(CPU, FetchOpcode) {
     CPU6502::Memory memory;
     CPU6502::CPU cpu(memory);
 
-    memory[0x0000] = 0xea;  // NOP Operation
-    cpu.registers.PC = 0x00;
+    CPU6502::Byte pc = CPU6502::Byte(0x00);
+    CPU6502::Byte nop = CPU6502::Byte(0xEA);
+    CPU6502::Word address = CPU6502::Word(0x0000);
+
+    memory.Set(address,nop);  // NOP Operation
+    cpu.registers.PC = pc;
+
+    memory.dump();
  
     std::cout << "Fetched opcode: " << std::endl;  // Debugging inpunt
     CPU6502::Byte opcode = cpu.FetchOpcode();

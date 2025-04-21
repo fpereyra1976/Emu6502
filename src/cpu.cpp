@@ -1,4 +1,8 @@
+#include<iostream>
+
 #include"cpu.hpp"
+
+
 
 namespace CPU6502{
 
@@ -49,9 +53,17 @@ namespace CPU6502{
  
  Byte CPU::FetchOpcode(){
      this->registers._RW = Bit::On;
+     std::cout << "registers._RW: " << std::hex << this->registers._RW << std::endl;
      this->registers._AB = this->registers.PC;
+     std::cout << "registers.PC: " << std::hex << this->registers.PC << std::endl;
+     std::cout << "registers._AB: " << std::hex << this->registers._AB << std::endl;
+
      this->registers._DB = this->memory.Get(registers._AB);
+     std::cout << "registers._DB: " << this->registers._DB << std::endl;
+
      this->registers._IR = this->registers._DB;
+     std::cout << "registers._IR: " << std::hex << this->registers._IR << std::endl;
+
      this->registers.PC++;
      return  this->registers._IR;
  }
