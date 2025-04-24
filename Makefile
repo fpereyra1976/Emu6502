@@ -4,7 +4,7 @@ INCLUDE_DIR = ./include
 TEST_DIR = tests
 
 CXX = g++
-CXXFLAGS = -I$(INCLUDE_DIR) -g -std=c++14 -march=native -mtune=native
+CXXFLAGS = -I$(INCLUDE_DIR) -g -O0 -std=c++17 -march=native -mtune=native
 
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
 SRC := $(filter-out $(TEST_DIR)/%, $(SRC))

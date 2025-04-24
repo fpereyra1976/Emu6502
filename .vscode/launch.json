@@ -1,0 +1,45 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Run Main App",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/cpu",  // Ruta al ejecutable
+        "args": [],
+        "stopAtEntry": true,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "preLaunchTask": "build",
+        "MIMode": "lldb",  // Usás clang++, por lo tanto LLDB
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for LLDB",
+            "text": "settings set target.pretty-printing true",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
+        "name": "Run Test Suite",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/tests",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "lldb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for LLDB",
+            "text": "settings set target.pretty-printing true",
+            "ignoreFailures": true
+          }
+        ]
+      }
+    ]
+  }
+  

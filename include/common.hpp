@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <iomanip>
 
 namespace CPU6502 {
     using Byte = std::uint8_t;
@@ -19,10 +20,9 @@ namespace CPU6502 {
     }
 
     inline std::ostream& operator<<(std::ostream& os, Byte b) {
-        os << static_cast<int>(b);
+        os << std::hex << "0x" << std::setw(2) << std::setfill('0') << static_cast<int>(b);
         return os;
     }
-
     // Me gustaria refefinirlo para WORD pero no se puede :-(
 }
 
