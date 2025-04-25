@@ -25,12 +25,13 @@
         "name": "Run Test Suite",
         "type": "cppdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/tests",
+        "program": "${workspaceFolder}/test_runner",
         "args": [],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
         "environment": [],
         "externalConsole": false,
+        "preLaunchTask": "build-test",
         "MIMode": "lldb",
         "setupCommands": [
           {

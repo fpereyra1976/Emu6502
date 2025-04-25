@@ -26,7 +26,7 @@ namespace CPU6502{
     class CPU{
         private:
             ControlUnitStatus status;
-            Memory memory;
+            Memory &memory;
 
         public:
             Registers registers;

@@ -24,7 +24,7 @@ endif
 
 TARGET = cpu
 
-all: $(TARGET)
+all: $(TARGET) $(TEST_BIN)
 
 $(TARGET): $(OBJ)
 	$(CXX) $(CXXFLAGS) main.cpp -o $@ $^

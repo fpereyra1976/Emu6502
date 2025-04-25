@@ -10,7 +10,17 @@
           "kind": "build",
           "isDefault": true
         }
-      }
+      },
+      {
+        "label": "build-test",
+        "type": "shell",
+        "command": "make",
+        "problemMatcher": ["$gcc"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
     ]
   }
   

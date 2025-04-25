@@ -5,7 +5,6 @@
 
 
 namespace CPU6502{
-
  Byte CPU::Reset(){
      this->registers._IR = 0x00;
      this->registers._RW = Bit::On; // READ

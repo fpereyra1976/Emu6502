@@ -13,11 +13,7 @@ TEST(CPU, FetchOpcode) {
     memory.Set(address,nop);  // NOP Operation
     cpu.registers.PC = pc;
 
-    memory.dump();
- 
-    std::cout << "Fetched opcode: " << std::endl;  // Debugging inpunt
     CPU6502::Byte opcode = cpu.FetchOpcode();
-    std::cout << "Fetched opcode: " << std::hex << (int)opcode << std::dec << std::endl;  // Debugging output
 
     EXPECT_EQ(opcode, 0xea);
 }
