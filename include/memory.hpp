@@ -9,6 +9,7 @@ namespace CPU6502{
     class Memory {
         private:
             std::array<Byte, MEMORY_SIZE+1> data;
+    
         public:
             Memory(){  
                 this->Initialise();

@@ -34,8 +34,8 @@ namespace CPU6502{
             OperationType type;
             OperationTarget target;
         public:
-        constexpr Operation(OperationType ty, OperationTarget tg)
-        : type(ty), target(tg) {}
+
+        constexpr Operation(OperationType ty, OperationTarget tg): type(ty), target(tg) {}
         constexpr OperationType getType() const { return type; }
         constexpr OperationTarget getTarget() const { return target; }   
     };
@@ -47,7 +47,6 @@ namespace CPU6502{
     constexpr Operation FETCH_OPERAND_Y(OperationType::FetchOperand, OperationTarget::Y);
     constexpr Operation FETCH_OPERAND_ADL(OperationType::FetchOperand, OperationTarget::ADL);
     constexpr Operation FETCH_OPERAND_ADH(OperationType::FetchOperand, OperationTarget::ADH);
-
     constexpr Operation JUMP(OperationType::FetchOperand, OperationTarget::ADH);
     
     class Instruction {
@@ -86,6 +85,7 @@ namespace CPU6502{
     );
 
     const std::map<Byte, Instruction> INSTRUCTION_SET = {
+        { 0xEA, NOP_IMPLICIT },
         { 0xA9, LDA_IMMEDIATE },
         { 0xA2, LDX_IMMEDIATE },
         { 0xA9, LDY_IMMEDIATE }

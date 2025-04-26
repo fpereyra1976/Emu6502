@@ -8,7 +8,6 @@
 #include"instructions.hpp"
 #include"exceptions.hpp"
 
-
 namespace CPU6502{   
     using InstructionSet = std::map<Byte, Instruction>;
 

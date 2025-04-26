@@ -1,3 +1,6 @@
 .vscode/settings.json
 **/*.o
 cpu
+test_runner
+cpu.dSYM/** 
+test_runner.dSYM/** 
