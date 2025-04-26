@@ -50,9 +50,10 @@ Byte CPU::FetchOpcode(){
     //AB ← PC, DB ← [PC], IR ← DB, PC ← PC + 1
      this->registers._RW = Bit::On;
      this->registers._AB = this->registers.PC;
+     
      this->registers._DB = this->memory.Get(registers._AB);
-     this->registers._IR = this->registers._DB;
 
+     this->registers._IR = this->registers._DB;
      this->registers.PC++;
      return  this->registers._IR;
  }
@@ -99,20 +100,53 @@ Byte CPU::FetchOpcode(){
     return this->registers._DB;
 }
 
-Byte CPU::FetchOperandImmediate(){
-    return this->FetchOperand(OperationTarget::A);
+Byte CPU::FetchOperandImmediateA(){
+    // AB ← PC, DB ← [PC], A ← DB, PC ← PC + 1
+    this->registers._RW = Bit::On;
+    this->registers._AB = this->registers.PC;
+
+    this->registers._DB = this->memory.Get(registers._AB);
+  
+    this->registers.A = this->registers._DB;
+    this->registers.PC++;
+    return this->registers._DB;
+}
+
+Byte CPU::FetchOperandImmediateX(){
+    // AB ← PC, DB ← [PC], X ← DB, PC ← PC + 1
+    this->registers._RW = Bit::On;
+    this->registers._AB = this->registers.PC;
+
+    this->registers._DB = this->memory.Get(registers._AB);
+  
+    this->registers.X = this->registers._DB;
+    this->registers.PC++;
+    return this->registers._DB;
+}
+
+Byte CPU::FetchOperandImmediateY(){
+    // AB ← PC, DB ← [PC], Y ← DB, PC ← PC + 1
+    this->registers._RW = Bit::On;
+    this->registers._AB = this->registers.PC;
+
+    this->registers._DB = this->memory.Get(registers._AB);
+  
+    this->registers.Y = this->registers._DB;
+    this->registers.PC++;
+    return this->registers._DB;
 }
 
 Byte CPU::FetchOperandZeropage(){
-    return this->FetchOperand(OperationTarget::ADL);
-}
+    // AB ← PC, DB ← [PC], tmp ← DB, PC ← PC + 1
+    this->registers._RW = Bit::On;
+    this->registers._AB = this->registers.PC;
 
-Byte CPU::FetchOperandZeropageX(){
-    return this->FetchOperand(OperationTarget::ADL);
-}
+    this->registers._DB = this->memory.Get(registers._AB);
 
-Byte CPU::FetchOperandZeropageY(){
-    return this->FetchOperand(OperationTarget::ADL);
+    this->registers._ADL = registers._DB;
+    this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
+    this->registers.PC++;
+    return this->registers._TMP;
 }
 
 Byte CPU::FetchFirstOperandAbsolute(){

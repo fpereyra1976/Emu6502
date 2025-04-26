@@ -37,11 +37,11 @@ namespace CPU6502{
             Byte FetchOpcode();
             Byte FetchOperand(OperationTarget tg);
             
-            Byte FetchOperandImmediate();
+            Byte FetchOperandImmediateA();
+            Byte FetchOperandImmediateX();
+            Byte FetchOperandImmediateY();
 
             Byte FetchOperandZeropage();
-            Byte FetchOperandZeropageX();
-            Byte FetchOperandZeropageY();
 
             Byte FetchFirstOperandAbsolute();
             Byte FetchSecondOperandAbsolute();
