@@ -27,14 +27,14 @@ TARGET = cpu
 all: $(TARGET) $(TEST_BIN)
 
 $(TARGET): $(OBJ)
-	$(CXX) $(CXXFLAGS) main.cpp -o $@ $^
+	$(CXX) $(CXXFLAGS) main.cpp -o $(BUILD_DIR)/$@ $^
 
 check: $(TEST_BIN)
 	@echo "\033[1;36m[Ejecutando tests]\033[0m"
 	./$(TEST_BIN)
 
 $(TEST_BIN): $(TEST_SRC) $(OBJ)
-	$(CXX) $(CXXFLAGS) $(GTEST_INC) $^ $(GTEST_LIB) -pthread -o $@
+	$(CXX) $(CXXFLAGS) $(GTEST_INC) $^ $(GTEST_LIB) -pthread -o $(BUILD_DIR)/$@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
