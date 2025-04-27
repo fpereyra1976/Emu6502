@@ -34,20 +34,29 @@ namespace CPU6502{
             void Reset();
             Byte OnTick();
             Byte ExecuteCycle();
+
+            // Fetch Opcode common for all addressing modes
             Byte FetchOpcode();
-            Byte FetchOperand(OperationTarget tg);
-            
-            Byte FetchOperandImmediateA();
-            Byte FetchOperandImmediateX();
-            Byte FetchOperandImmediateY();
+
+            // Fetch Operands only Inmediate get value in same step
+            Byte FetchOperandImmediate(Byte &reg);
 
             Byte FetchOperandZeropage();
 
             Byte FetchFirstOperandAbsolute();
             Byte FetchSecondOperandAbsolute();
 
-            Byte FecthOperanIndirectX();
-            Byte FecthOperanIndirectY();
+            Byte FecthOperanIndirect();
+
+            // Fetch Address
+            Byte FetchAddressZeropage(Byte idx);
+
+            // Fetch Values
+            Byte FetchValueZeropage(Byte &reg);
+            Byte FetchValueZeropageIndexed(Byte &reg); // Depends on FetchAddressZeropage
+
+ 
+            void UpdateFlags();
     };
 }
 

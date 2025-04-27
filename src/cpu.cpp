@@ -59,113 +59,18 @@ Byte CPU::FetchOpcode(){
 
     this->registers._IR = this->registers._DB;
     this->registers.PC++;
-    return  this->registers._IR;
- }
-
- Byte CPU::FetchOperand(OperationTarget tg){
-    this->registers._RW = Bit::On;
-    this->registers._AB = this->registers.PC;
-    this->registers._DB = this->memory.Get(registers._AB);
-    switch(tg){
-        case OperationTarget::Nil:{
-             // To Do May not be used
-        } break;
-        case OperationTarget::A:{
-        // Immediate
-            this->registers.A = this->registers._DB;
-        } break;
-        case OperationTarget::X:{
-            // Immediate
-            this->registers.X = this->registers._DB;
-        } break;
-        case OperationTarget::Y:{
-            // immediate
-            this->registers.Y = this->registers._DB;
-        } break;
-        case OperationTarget::TMP:{
-            // To Do May not be used
-            this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
-         }
-        break;
-        case OperationTarget::ADL:{
-            // Zeropage, Absolute, Indirect
-            this->registers._ADL = registers._DB;
-            this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
-        }
-        break;
-        case OperationTarget::ADH:{
-            // Absolute
-            this->registers._ADH = this->registers._DB;
-            this->registers._TMP = (this->registers._ADH << 8)|this->registers._ADL;
-         }
-         break;
-    }
-    this->registers.PC++;
-    return this->registers._DB;
+   return  this->registers._IR;
 }
 
-Byte CPU::FetchOperandImmediateA(){
-    // AB ← PC, DB ← [PC], A ← DB, PC ← PC + 1
+Byte CPU::FetchOperandImmediate(Byte &reg){
+    // AB ← PC, DB ← [PC], REG ← DB, PC ← PC + 1
     this->registers._RW = Bit::On;
     this->registers._AB = this->registers.PC;
 
     this->registers._DB = this->memory.Get(registers._AB);
   
-    this->registers.A = this->registers._DB;
+    reg = this->registers._DB;
     this->registers.PC++;
-
-    // Update Flags   
-    (this->registers.A == 0x00) ? 
-        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::Z): 
-        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::Z);
-
-    (this->registers.A & 0x80) ?
-        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::N): 
-        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::N);
-
-    return this->registers._DB;
-}
-
-Byte CPU::FetchOperandImmediateX(){
-    // AB ← PC, DB ← [PC], X ← DB, PC ← PC + 1
-    this->registers._RW = Bit::On;
-    this->registers._AB = this->registers.PC;
-
-    this->registers._DB = this->memory.Get(registers._AB);
-  
-    this->registers.X = this->registers._DB;
-    this->registers.PC++;
-
-    // Update Flags
-    (this->registers.X == 0x00) ? 
-        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::Z): 
-        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::Z);
-
-    (this->registers.X & 0x80) ?
-        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::N): 
-        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::N);
-
-    return this->registers._DB;
-}
-
-Byte CPU::FetchOperandImmediateY(){
-    // AB ← PC, DB ← [PC], Y ← DB, PC ← PC + 1
-    this->registers._RW = Bit::On;
-    this->registers._AB = this->registers.PC;
-
-    this->registers._DB = this->memory.Get(registers._AB);
-  
-    this->registers.Y = this->registers._DB;
-    this->registers.PC++;
-
-    // Update Flags
-    (this->registers.Y == 0x00) ? 
-        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::Z): 
-        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::Z);
-
-    (this->registers.Y & 0x80) ?
-        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::N): 
-        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::N);
 
     return this->registers._DB;
 }
@@ -212,7 +117,7 @@ Byte CPU::FetchSecondOperandAbsolute(){
     return this->registers._DB;
 }
 
-Byte CPU::FecthOperanIndirectX(){
+Byte CPU::FecthOperanIndirect(){
     // ptr ← (zp_base + X) & $FF, AB ← ptr, DB ← [AB], tmp_lo ← DB
     // Same as Zeropage
     this->registers._RW = Bit::On;
@@ -226,18 +131,50 @@ Byte CPU::FecthOperanIndirectX(){
     return this->registers._DB;
 }
 
-Byte CPU::FecthOperanIndirectY(){
-    // AB ← ptr, DB ← [AB], tmp_lo ← DB
-    // Same as Zeropage
-    this->registers._RW = Bit::On;
-    this->registers._AB = this->registers.PC;
-    
-    this->registers._DB = this->memory.Get(registers._AB);
+Byte CPU::FetchAddressZeropage(Byte idx){
+    // tmp ← (tmp + idx) & $FF, AB ← tmp
+    // LDA $AA,X => idx = X
+    // LDX $AA,Y => idx = Y
+    // LDY $AA,X => idx = X
+    this->registers._TMP = (this->registers._TMP + idx ) & 0x00ff;
+    this->registers._AB = this->registers._TMP;
+    return this->registers._AB;
+}
 
-    this->registers._ADL = registers._DB;
-    this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
-    this->registers.PC++;
+Byte CPU::FetchValueZeropage(Byte &reg){
+    // AB ← tmp, DB ← [AB], reg ← DB
+    // LDA $AA => reg = A
+    // LDX $AA => reg = X
+    // LDY $AA => reg = Y
+    this->registers._RW = CPU6502::Bit::On;
+    this->registers._AB = this->registers._TMP;
+
+    Byte value = this->memory.Get(this->registers._AB);
+
+    this->registers._DB = value;
+    reg = this->registers._DB;
+
     return this->registers._DB;
+}
+
+Byte CPU::FetchValueZeropageIndexed(Byte &reg){
+    // DB ← [AB], A ← DB
+    this->registers._DB = this->memory.Get(this->registers._AB);
+    reg = this->registers._DB;
+    return this->registers._DB;
+}
+
+
+// Just temporary to avoid lossing this code
+void CPU::UpdateFlags(){
+    // Update Flags
+    (this->registers.X == 0x00) ? 
+        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::Z): 
+        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::Z);
+
+    (this->registers.X & 0x80) ?
+        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::N): 
+        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::N);
 }
 
 } // end namespace
