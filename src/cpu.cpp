@@ -2,63 +2,64 @@
 
 namespace CPU6502{
  void CPU::Reset(){
-     this->registers._IR = 0x00;
-     this->registers._RW = Bit::On; // READ
-     this->registers.A     = 0x00;
-     this->registers.X     = 0x00;
-     this->registers.Y     = 0x00;
-     this->registers._TMP  = 0x0000;
-     this->registers.SP    = 0x0100;
+    this->registers._IR = 0x00;
+    this->registers._RW = Bit::On; // READ
+    this->registers.A     = 0x00;
+    this->registers.X     = 0x00;
+    this->registers.Y     = 0x00;
+    this->registers._TMP  = 0x0000;
+    this->registers.SP    = 0x0100;
+    this->registers.P     = 0x21;
 
-     this->registers._AB = 0xfffc;
-     this->registers._DB = this->memory.Get(this->registers._AB);
-     this->registers._ADL = this->registers._DB;
+    this->registers._AB = 0xfffc;
+    this->registers._DB = this->memory.Get(this->registers._AB);
+    this->registers._ADL = this->registers._DB;
 
-     this->registers._AB = 0xfffd;
-     this->registers._DB = this->memory.Get(this->registers._AB);
-     this->registers._ADH = this->registers._DB;
+    this->registers._AB = 0xfffd;
+    this->registers._DB = this->memory.Get(this->registers._AB);
+    this->registers._ADH = this->registers._DB;
 
-     this->registers._AB = (this->registers._ADH << 8) | this->registers._ADL;
-     this->registers._DB = this->memory.Get(this->registers._AB);
-     this->registers.PC = this->registers._DB;
+    this->registers._AB = (this->registers._ADH << 8) | this->registers._ADL;
+    this->registers._DB = this->memory.Get(this->registers._AB);
+    this->registers.PC = this->registers._DB;
  }
 
  Byte CPU::OnTick(){
-     try{
-         Byte b = this->ExecuteCycle();
-         return b;
-     }catch(CPUException &e){
-         throw CPUCOnTickException();
-     }
-     return Byte(0); // TODO
+    try{
+       Byte b = this->ExecuteCycle();
+       return b;
+    }catch(CPUException &e){
+       throw CPUCOnTickException();
+    }
+    return Byte(0); // TODO
  }
 
  Byte CPU::ExecuteCycle(){
-     while(1){
-         switch(this->status){
-             case ControlUnitStatus::FETCHING_OP_CODE: {} break;
-             case ControlUnitStatus::FETCHING_OPERAND: {} break;
-             // case ControlUnitStatus::FETCHING_MEMORY: {} break;
-             // case ControlUnitStatus::WRITING_MEMORY: {} break;
-             // case ControlUnitStatus::CHANGING_MEMORY_PG: {} break;
-             // case ControlUnitStatus::INDEXING_MEMORY_ADDRESS: {} break;
-             // case ControlUnitStatus::EXECUTE: {} break;
-             // default: {} break;
-         }
-     }
-     return Byte(0);
+    while(1){
+        switch(this->status){
+            case ControlUnitStatus::FETCHING_OP_CODE: {} break;
+            case ControlUnitStatus::FETCHING_OPERAND: {} break;
+            // case ControlUnitStatus::FETCHING_MEMORY: {} break;
+            // case ControlUnitStatus::WRITING_MEMORY: {} break;
+            // case ControlUnitStatus::CHANGING_MEMORY_PG: {} break;
+            // case ControlUnitStatus::INDEXING_MEMORY_ADDRESS: {} break;
+            // case ControlUnitStatus::EXECUTE: {} break;
+            // default: {} break;
+        }
+    }
+    return Byte(0);
  }
  
 Byte CPU::FetchOpcode(){
     //AB ← PC, DB ← [PC], IR ← DB, PC ← PC + 1
-     this->registers._RW = Bit::On;
-     this->registers._AB = this->registers.PC;
-     
-     this->registers._DB = this->memory.Get(registers._AB);
+    this->registers._RW = Bit::On;
+    this->registers._AB = this->registers.PC;
+    
+    this->registers._DB = this->memory.Get(registers._AB);
 
-     this->registers._IR = this->registers._DB;
-     this->registers.PC++;
-     return  this->registers._IR;
+    this->registers._IR = this->registers._DB;
+    this->registers.PC++;
+    return  this->registers._IR;
  }
 
  Byte CPU::FetchOperand(OperationTarget tg){
@@ -112,6 +113,16 @@ Byte CPU::FetchOperandImmediateA(){
   
     this->registers.A = this->registers._DB;
     this->registers.PC++;
+
+    // Update Flags   
+    (this->registers.A == 0x00) ? 
+        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::Z): 
+        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::Z);
+
+    (this->registers.A & 0x80) ?
+        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::N): 
+        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::N);
+
     return this->registers._DB;
 }
 
@@ -124,6 +135,16 @@ Byte CPU::FetchOperandImmediateX(){
   
     this->registers.X = this->registers._DB;
     this->registers.PC++;
+
+    // Update Flags
+    (this->registers.X == 0x00) ? 
+        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::Z): 
+        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::Z);
+
+    (this->registers.X & 0x80) ?
+        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::N): 
+        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::N);
+
     return this->registers._DB;
 }
 
@@ -136,6 +157,16 @@ Byte CPU::FetchOperandImmediateY(){
   
     this->registers.Y = this->registers._DB;
     this->registers.PC++;
+
+    // Update Flags
+    (this->registers.Y == 0x00) ? 
+        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::Z): 
+        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::Z);
+
+    (this->registers.Y & 0x80) ?
+        this->registers.P |= static_cast<std::uint8_t>(CPU6502::StatusFlag::N): 
+        this->registers.P &= ~static_cast<std::uint8_t>(CPU6502::StatusFlag::N);
+
     return this->registers._DB;
 }
 

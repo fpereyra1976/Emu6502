@@ -35,6 +35,8 @@ TEST(CPU, FetchOpcode) {
 }
 
 TEST(CPU, FetchOperandImmediateA) {
+    // TO DOs Check P Flags
+
     // Given
     CPU6502::Memory memory;
     CPU6502::CPU cpu(memory);
@@ -68,6 +70,8 @@ TEST(CPU, FetchOperandImmediateA) {
 }
 
 TEST(CPU, FetchOperandImmediateX) {
+    // TO DOs Check P Flags
+
     // Given
     CPU6502::Memory memory;
     CPU6502::CPU cpu(memory);
@@ -102,6 +106,8 @@ TEST(CPU, FetchOperandImmediateX) {
 }
 
 TEST(CPU, FetchOperandImmediateY) {
+    // TO DOs Check P Flags
+
     // Given
     CPU6502::Memory memory;
     CPU6502::CPU cpu(memory);
