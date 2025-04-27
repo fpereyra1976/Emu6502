@@ -12,17 +12,7 @@ TEST(CPU, FetchOpcode) {
     memory.Set(address,nop);  // NOP Operation
 
     // Remove when reset method is completed
-    cpu.registers._TMP  = 0x0000;
-    cpu.registers._AB   = 0x0000;
-    cpu.registers._DB   = 0x00;
-    cpu.registers._IR   = 0x00;
-    cpu.registers._ADL  = 0x00;
-    cpu.registers._ADH  = 0x00;
-    cpu.registers._RW   = CPU6502::Bit::On;
-    cpu.registers.A     = 0x00;
-    cpu.registers.X     = 0x00;
-    cpu.registers.Y     = 0x00;
-    cpu.registers.SP    = 0x100;
+    cpu.Reset();
     cpu.registers.PC    = pc;
 
     CPU6502::Byte opcode = cpu.FetchOpcode();
@@ -39,7 +29,7 @@ TEST(CPU, FetchOpcode) {
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x00);
+    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
     EXPECT_EQ(cpu.registers._ADL,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }
@@ -53,17 +43,7 @@ TEST(CPU, FetchOperandImmediateA) {
     memory.Set(address,value);  // Ser Value
     
     // Remove when reset method is completed
-    cpu.registers._TMP  = 0x0000;
-    cpu.registers._AB   = 0x0000;
-    cpu.registers._DB   = 0x00;
-    cpu.registers._IR   = 0x00;
-    cpu.registers._ADL  = 0x00;
-    cpu.registers._ADH  = 0x00;
-    cpu.registers._RW   = CPU6502::Bit::On;
-    cpu.registers.A     = 0x00;
-    cpu.registers.X     = 0x00;
-    cpu.registers.Y     = 0x00;
-    cpu.registers.SP    = 0x100;
+    cpu.Reset();
     cpu.registers.PC    = address;
 
     CPU6502::Byte result = cpu.FetchOperandImmediateA();
@@ -82,7 +62,7 @@ TEST(CPU, FetchOperandImmediateA) {
      EXPECT_EQ(cpu.registers._IR,0x00);
      EXPECT_EQ(cpu.registers.X,0x00);
      EXPECT_EQ(cpu.registers.Y,0x00);
-     EXPECT_EQ(cpu.registers._ADH,0x00);
+     EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
      EXPECT_EQ(cpu.registers._ADL,0x00);
      EXPECT_EQ(cpu.registers.SP,0x0100);
 }
@@ -96,18 +76,8 @@ TEST(CPU, FetchOperandImmediateX) {
     memory.Set(address,value);  // Ser Value
     
     // Remove when reset method is completed
-    cpu.registers._TMP  = 0x0000;
-    cpu.registers._AB   = 0x0000;
-    cpu.registers._DB   = 0x00;
-    cpu.registers._IR   = 0x00;
-    cpu.registers._ADL  = 0x00;
-    cpu.registers._ADH  = 0x00;
-    cpu.registers._RW   = CPU6502::Bit::On;
-    cpu.registers.A     = 0x00;
-    cpu.registers.X     = 0x00;
-    cpu.registers.Y     = 0x00;
-    cpu.registers.SP    = 0x100;
-    cpu.registers.PC    = address;
+    cpu.Reset();
+    cpu.registers.PC = address;
 
     CPU6502::Byte result = cpu.FetchOperandImmediateX();
 
@@ -126,7 +96,7 @@ TEST(CPU, FetchOperandImmediateX) {
     EXPECT_EQ(cpu.registers._IR,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x00);
+    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
     EXPECT_EQ(cpu.registers._ADL,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }
@@ -140,18 +110,8 @@ TEST(CPU, FetchOperandImmediateY) {
     memory.Set(address,value);  // Ser Value
     
     // Remove when reset method is completed
-    cpu.registers._TMP  = 0x0000;
-    cpu.registers._AB   = 0x0000;
-    cpu.registers._DB   = 0x00;
-    cpu.registers._IR   = 0x00;
-    cpu.registers._ADL  = 0x00;
-    cpu.registers._ADH  = 0x00;
-    cpu.registers._RW   = CPU6502::Bit::On;
-    cpu.registers.A     = 0x00;
-    cpu.registers.X     = 0x00;
-    cpu.registers.Y     = 0x00;
-    cpu.registers.SP    = 0x100;
-    cpu.registers.PC    = address;
+    cpu.Reset();
+    cpu.registers.PC = address;
 
     CPU6502::Byte result = cpu.FetchOperandImmediateY();
 
@@ -170,7 +130,7 @@ TEST(CPU, FetchOperandImmediateY) {
      EXPECT_EQ(cpu.registers._IR,0x00);
      EXPECT_EQ(cpu.registers.A,0x00);
      EXPECT_EQ(cpu.registers.X,0x00);
-     EXPECT_EQ(cpu.registers._ADH,0x00);
+     EXPECT_EQ(cpu.registers._ADH,0x80);
      EXPECT_EQ(cpu.registers._ADL,0x00);
      EXPECT_EQ(cpu.registers.SP,0x0100);
 }
@@ -184,18 +144,8 @@ TEST(CPU,FetchOperandZeropage) {
     memory.Set(address,value);  // Ser Value
     
     // Remove when reset method is completed
-    cpu.registers._TMP  = 0x0000;
-    cpu.registers._AB   = 0x0000;
-    cpu.registers._DB   = 0x00;
-    cpu.registers._IR   = 0x00;
-    cpu.registers._ADL  = 0x00;
-    cpu.registers._ADH  = 0x00;
-    cpu.registers._RW   = CPU6502::Bit::On;
-    cpu.registers.A     = 0x00;
-    cpu.registers.X     = 0x00;
-    cpu.registers.Y     = 0x00;
-    cpu.registers.SP    = 0x100;
-    cpu.registers.PC    = address;
+    cpu.Reset();
+    cpu.registers.PC = address;
 
     CPU6502::Byte tmp_lo = cpu.FetchOperandZeropage();
 
@@ -214,7 +164,7 @@ TEST(CPU,FetchOperandZeropage) {
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x00);
+    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
@@ -227,17 +177,7 @@ TEST(CPU,FetchFirstOperandAbsolute) {
     memory.Set(address,value);  // Ser Value
     
     // Remove when reset method is completed
-    cpu.registers._TMP  = 0x0000;
-    cpu.registers._AB   = 0x0000;
-    cpu.registers._DB   = 0x00;
-    cpu.registers._IR   = 0x00;
-    cpu.registers._ADL  = 0x00;
-    cpu.registers._ADH  = 0x00;
-    cpu.registers._RW   = CPU6502::Bit::On;
-    cpu.registers.A     = 0x00;
-    cpu.registers.X     = 0x00;
-    cpu.registers.Y     = 0x00;
-    cpu.registers.SP    = 0x100;
+    cpu.Reset();
     cpu.registers.PC    = address;
 
     CPU6502::Byte tmp_lo = cpu.FetchFirstOperandAbsolute();
@@ -251,13 +191,14 @@ TEST(CPU,FetchFirstOperandAbsolute) {
     EXPECT_EQ(cpu.registers._DB,value);
     EXPECT_EQ(cpu.registers.PC,address+1);
     EXPECT_EQ(cpu.registers._ADL,value);   
+    EXPECT_EQ(cpu.registers._TMP,(0x00 << 8)|value);
 
     // No Modified
     EXPECT_EQ(cpu.registers._IR,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x00);
+    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
@@ -273,17 +214,7 @@ TEST(CPU,FetchSecondOperandAbsolute){
     memory.Set(address+1,hi_value);  // Ser Value
     
     // Remove when reset method is completed
-    cpu.registers._TMP  = 0x0000;
-    cpu.registers._AB   = 0x0000;
-    cpu.registers._DB   = 0x00;
-    cpu.registers._IR   = 0x00;
-    cpu.registers._ADL  = 0x00;
-    cpu.registers._ADH  = 0x00;
-    cpu.registers._RW   = CPU6502::Bit::On;
-    cpu.registers.A     = 0x00;
-    cpu.registers.X     = 0x00;
-    cpu.registers.Y     = 0x00;
-    cpu.registers.SP    = 0x100;
+    cpu.Reset();
     cpu.registers.PC    = address;
 
     CPU6502::Byte tmp_lo = cpu.FetchFirstOperandAbsolute();
@@ -306,5 +237,73 @@ TEST(CPU,FetchSecondOperandAbsolute){
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
+    EXPECT_EQ(cpu.registers.SP,0x0100);
+}
+
+TEST(CPU,FecthOperanIndirectX) {
+    // Given
+    CPU6502::Memory memory;
+    CPU6502::CPU cpu(memory);
+    CPU6502::Byte value = CPU6502::Byte(0xAB);
+    CPU6502::Word address = CPU6502::Word(0x0001);
+    memory.Set(address,value);  // Ser Value
+    
+    // Remove when reset method is completed
+    cpu.Reset();
+    cpu.registers.PC = address;
+
+    CPU6502::Byte tmp_lo = cpu.FecthOperanIndirectX();
+
+    // Check Result
+    EXPECT_EQ(tmp_lo, value);
+
+    // Check every register
+    EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
+    EXPECT_EQ(cpu.registers._AB,address);
+    EXPECT_EQ(cpu.registers._DB,value);
+    EXPECT_EQ(cpu.registers.PC,address+1);
+    EXPECT_EQ(cpu.registers._ADL,value);   
+    EXPECT_EQ(cpu.registers._TMP,(0x00 << 8)|value);
+
+    // No Modified
+    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers.A,0x00);
+    EXPECT_EQ(cpu.registers.X,0x00);
+    EXPECT_EQ(cpu.registers.Y,0x00);
+    EXPECT_EQ(cpu.registers._ADH,0x80);
+    EXPECT_EQ(cpu.registers.SP,0x0100);
+}
+
+TEST(CPU,FecthOperanIndirectY) {
+    // Given
+    CPU6502::Memory memory;
+    CPU6502::CPU cpu(memory);
+    CPU6502::Byte value = CPU6502::Byte(0xAB);
+    CPU6502::Word address = CPU6502::Word(0x0001);
+    memory.Set(address,value);  // Ser Value
+    
+    // Remove when reset method is completed
+    cpu.Reset();
+    cpu.registers.PC = address;
+
+    CPU6502::Byte tmp_lo = cpu.FecthOperanIndirectY();
+
+    // Check Result
+    EXPECT_EQ(tmp_lo, value);
+
+    // Check every register
+    EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
+    EXPECT_EQ(cpu.registers._AB,address);
+    EXPECT_EQ(cpu.registers._DB,value);
+    EXPECT_EQ(cpu.registers.PC,address+1);
+    EXPECT_EQ(cpu.registers._ADL,value); 
+    EXPECT_EQ(cpu.registers._TMP,(0x00 << 8)|value);
+
+    // No Modified
+    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers.A,0x00);
+    EXPECT_EQ(cpu.registers.X,0x00);
+    EXPECT_EQ(cpu.registers.Y,0x00);
+    EXPECT_EQ(cpu.registers._ADH,0x80);
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }

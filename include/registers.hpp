@@ -17,9 +17,10 @@ class Registers{
         Byte    A;
         Byte    X;
         Byte    Y;
-        Byte    P;
         Word    SP;
         Word    PC;
+        Byte    Flags;
 };
+
 }
 #endif

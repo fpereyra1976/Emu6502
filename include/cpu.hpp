@@ -31,7 +31,7 @@ namespace CPU6502{
             Registers registers;
 
             CPU(Memory &memory) : status(ControlUnitStatus::FETCHING_OP_CODE), memory(memory) {}
-            Byte Reset();
+            void Reset();
             Byte OnTick();
             Byte ExecuteCycle();
             Byte FetchOpcode();

@@ -5,7 +5,6 @@
 
 namespace CPU6502{ 
     const Word MEMORY_SIZE = 0xffff;
-
     class Memory {
         private:
             std::array<Byte, MEMORY_SIZE+1> data;

@@ -1,9 +1,14 @@
 #include"cpu.hpp"
 
 namespace CPU6502{
- Byte CPU::Reset(){
+ void CPU::Reset(){
      this->registers._IR = 0x00;
      this->registers._RW = Bit::On; // READ
+     this->registers.A     = 0x00;
+     this->registers.X     = 0x00;
+     this->registers.Y     = 0x00;
+     this->registers._TMP  = 0x0000;
+     this->registers.SP    = 0x0100;
 
      this->registers._AB = 0xfffc;
      this->registers._DB = this->memory.Get(this->registers._AB);
@@ -16,8 +21,6 @@ namespace CPU6502{
      this->registers._AB = (this->registers._ADH << 8) | this->registers._ADL;
      this->registers._DB = this->memory.Get(this->registers._AB);
      this->registers.PC = this->registers._DB;
-     
-     return 0x00;
  }
 
  Byte CPU::OnTick(){
@@ -151,6 +154,7 @@ Byte CPU::FetchOperandZeropage(){
 
 Byte CPU::FetchFirstOperandAbsolute(){
     // AB ← PC, DB ← [PC], tmp_lo ← DB, PC ← PC + 1
+    // Same as Zerpage
     this->registers._RW = Bit::On;
     this->registers._AB = this->registers.PC;
  
@@ -178,11 +182,31 @@ Byte CPU::FetchSecondOperandAbsolute(){
 }
 
 Byte CPU::FecthOperanIndirectX(){
-    return this->FetchOperand(OperationTarget::ADL);
+    // ptr ← (zp_base + X) & $FF, AB ← ptr, DB ← [AB], tmp_lo ← DB
+    // Same as Zeropage
+    this->registers._RW = Bit::On;
+    this->registers._AB = this->registers.PC;
+    
+    this->registers._DB = this->memory.Get(registers._AB);
+
+    this->registers._ADL = registers._DB;
+    this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
+    this->registers.PC++;
+    return this->registers._DB;
 }
 
 Byte CPU::FecthOperanIndirectY(){
-    return this->FetchOperand(OperationTarget::ADL);
+    // AB ← ptr, DB ← [AB], tmp_lo ← DB
+    // Same as Zeropage
+    this->registers._RW = Bit::On;
+    this->registers._AB = this->registers.PC;
+    
+    this->registers._DB = this->memory.Get(registers._AB);
+
+    this->registers._ADL = registers._DB;
+    this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
+    this->registers.PC++;
+    return this->registers._DB;
 }
 
 } // end namespace
