@@ -46,12 +46,6 @@ namespace CPU6502{
             Byte FetchFirstOperandAbsolute();
             Byte FetchSecondOperandAbsolute();
 
-            Byte FetchFirstOperandAbsoluteX();
-            Byte FetchSecondOperandAbsoluteX();
-
-            Byte FetchFirstOperandAbsoluteY();
-            Byte FetchSecondOperandAbsoluteY();
-
             Byte FecthOperanIndirectX();
             Byte FecthOperanIndirectY();
     };

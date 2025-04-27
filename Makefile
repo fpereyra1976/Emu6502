@@ -31,7 +31,7 @@ $(TARGET): $(OBJ)
 
 check: $(TEST_BIN)
 	@echo "\033[1;36m[Ejecutando tests]\033[0m"
-	./$(TEST_BIN)
+	./$(BUILD_DIR)/$(TEST_BIN)
 
 $(TEST_BIN): $(TEST_SRC) $(OBJ)
 	$(CXX) $(CXXFLAGS) $(GTEST_INC) $^ $(GTEST_LIB) -pthread -o $(BUILD_DIR)/$@
