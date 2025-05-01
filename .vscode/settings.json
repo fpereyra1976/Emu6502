@@ -1,4 +1,5 @@
 {
-    "testMate.cpp.test.executables": "build/test_runner"
+    "testMate.cpp.test.executables": "build/test_runner",
+    "C_Cpp.codeAnalysis.clangTidy.path": "/usr/local/opt/llvm/bin/clang-tidy"
 }
   
