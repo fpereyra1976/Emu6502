@@ -48,7 +48,7 @@ TEST(CPU, FetchOperandImmediateA) {
     cpu.Reset();
     cpu.registers.PC    = address;
 
-    CPU6502::Byte result = cpu.FetchOperandImmediate(cpu.registers.A);
+    CPU6502::Byte result = cpu.FetchOperandImmediateA();
 
      // Check Result
      EXPECT_EQ(result, value);
@@ -83,7 +83,7 @@ TEST(CPU, FetchOperandImmediateX) {
     cpu.Reset();
     cpu.registers.PC = address;
 
-    CPU6502::Byte result = cpu.FetchOperandImmediate(cpu.registers.X);
+    CPU6502::Byte result = cpu.FetchOperandImmediateX();
 
      // Check Result
     EXPECT_EQ(result, value);
@@ -119,7 +119,7 @@ TEST(CPU, FetchOperandImmediateY) {
     cpu.Reset();
     cpu.registers.PC = address;
 
-    CPU6502::Byte result = cpu.FetchOperandImmediate(cpu.registers.Y);
+    CPU6502::Byte result = cpu.FetchOperandImmediateY();
 
      // Check Result
      EXPECT_EQ(result, value);

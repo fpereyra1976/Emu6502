@@ -40,6 +40,9 @@ namespace CPU6502{
 
             // Fetch Operands only Inmediate get value in same step
             Byte FetchOperandImmediate(Byte &reg);
+            Byte FetchOperandImmediateA();
+            Byte FetchOperandImmediateX();
+            Byte FetchOperandImmediateY();
 
             Byte FetchOperandZeropage();
 

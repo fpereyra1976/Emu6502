@@ -69,10 +69,26 @@ Byte CPU::FetchOperandImmediate(Byte &reg){
 
     this->registers._DB = this->memory.Get(registers._AB);
   
+    // The next line is only for lda/ldx/ldy (for now)
+    // this line and flags updates should be moved to an specific function.
     reg = this->registers._DB;
+    
+    
     this->registers.PC++;
 
     return this->registers._DB;
+}
+
+Byte CPU::FetchOperandImmediateA(){
+    return this->FetchOperandImmediate(this->registers.A);
+}
+
+Byte CPU::FetchOperandImmediateX(){
+    return this->FetchOperandImmediate(this->registers.X);
+}
+
+Byte CPU::FetchOperandImmediateY(){
+    return this->FetchOperandImmediate(this->registers.Y);
 }
 
 Byte CPU::FetchOperandZeropage(){
