@@ -11,26 +11,20 @@
 namespace CPU6502{   
     using InstructionSet = std::map<Byte, Instruction>;
 
-    enum class ControlUnitStatus : uint8_t { 
-        FETCHING_OP_CODE        =   0x01, 
-        FETCHING_OPERAND        =   0x02, 
-        // FETCHING_OPERAND_VALUE  =   0x04, 
-        // FETCHING_MEMORY         =   0x08,
-        // WRITING_MEMORY          =   0x10,
-        // CHANGING_MEMORY_PG      =   0x20,
-        // INDEXING_MEMORY_ADDRESS =   0x40,
-        // EXECUTE                 =   0x80
-    };
-
     class CPU{
         private:
-            ControlUnitStatus status;
+        OperationStep state;
             Memory &memory;
+
+            Byte FetchOperandImmediate_(Byte &reg);
+            Byte FetchAddressZeropage_(Byte idx);
+            Byte FetchValueZeropage_(Byte &reg);
+            Byte FetchValueZeropageIndexed_(Byte &reg); // Depends on FetchAddressZeropage
 
         public:
             Registers registers;
 
-            CPU(Memory &memory) : status(ControlUnitStatus::FETCHING_OP_CODE), memory(memory) {}
+            CPU(Memory &memory) : state(OperationStep::FetchOpcode), memory(memory) {}
             void Reset();
             Byte OnTick();
             Byte ExecuteCycle();
@@ -39,7 +33,6 @@ namespace CPU6502{
             Byte FetchOpcode();
 
             // Fetch Operands only Inmediate get value in same step
-            Byte FetchOperandImmediate(Byte &reg);
             Byte FetchOperandImmediateA();
             Byte FetchOperandImmediateX();
             Byte FetchOperandImmediateY();
@@ -52,11 +45,18 @@ namespace CPU6502{
             Byte FecthOperanIndirect();
 
             // Fetch Address
-            Byte FetchAddressZeropage(Byte idx);
+            Byte FetchAddressZeropageA();
+            Byte FetchAddressZeropageX();
+            Byte FetchAddressZeropageY();
 
             // Fetch Values
-            Byte FetchValueZeropage(Byte &reg);
-            Byte FetchValueZeropageIndexed(Byte &reg); // Depends on FetchAddressZeropage
+            Byte FetchValueZeropageA();
+            Byte FetchValueZeropageX();
+            Byte FetchValueZeropageY();
+
+            Byte FetchValueZeropageIndexedX(); // Depends on FetchAddressZeropage
+            Byte FetchValueZeropageIndexedY(); // Depends on FetchAddressZeropage
+
 
  
             void UpdateFlags();
