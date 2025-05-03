@@ -1,59 +1,57 @@
+#include <thread>
+#include <chrono>
+
 #include"cpu.hpp"
 
 namespace CPU6502{
- void CPU::Reset(){
-    this->registers._IR = 0x00;
-    this->registers._RW = Bit::On; // READ
-    this->registers.A     = 0x00;
-    this->registers.X     = 0x00;
-    this->registers.Y     = 0x00;
-    this->registers._TMP  = 0x0000;
-    this->registers.SP    = 0x0100;
-    this->registers.P     = 0x21;
 
-    this->registers._AB = 0xfffc;
-    this->registers._DB = this->memory.Get(this->registers._AB);
-    this->registers._ADL = this->registers._DB;
-
-    this->registers._AB = 0xfffd;
-    this->registers._DB = this->memory.Get(this->registers._AB);
-    this->registers._ADH = this->registers._DB;
-
-    this->registers._AB = (this->registers._ADH << 8) | this->registers._ADL;
-    this->registers._DB = this->memory.Get(this->registers._AB);
-    this->registers.PC = this->registers._DB;
- }
-
- Byte CPU::OnTick(){
-    try{
-       Byte b = this->ExecuteCycle();
-       return b;
-    }catch(CPUException &e){
-       throw CPUCOnTickException();
-    }
-    return Byte(0); // TODO
- }
-
- Byte CPU::ExecuteCycle(){
-    // This is the default stateº
+void CPU::Start(){
     while(1){
-        switch(this->state){
-            case OperationStep::FetchOpcode: {
-                this->FetchOpcode();
-                Instruction i = INSTRUCTION_SET.at(this->registers._IR);
-                this->state = i.Steps().at(0);
-            } break;
-            case OperationStep::FetchFirstOperand: {} break;
-            // case ControlUnitStatus::FETCHING_MEMORY: {} break;
-            // case ControlUnitStatus::WRITING_MEMORY: {} break;
-            // case ControlUnitStatus::CHANGING_MEMORY_PG: {} break;
-            // case ControlUnitStatus::INDEXING_MEMORY_ADDRESS: {} break;
-            // case ControlUnitStatus::EXECUTE: {} break;
-            // default: {} break;
+        std::this_thread::sleep_for(std::chrono::nanoseconds(500));  // 0.5 µs
+        this->clockState = !this->clockState;
+        if(this->clockState){
+            try{
+                this->ExecuteCycle();
+            }catch(CPUCOnTickException &e){
+                throw CPUException();
+            }
         }
     }
-    return Byte(0);
  }
+
+Byte CPU::ExecuteCycle(){
+    // This is the default stateº
+    switch(this->state){
+        
+        case OperationStep::Reset: {
+            this->Reset();
+            try{
+                INSTRUCTION_SET.at(this->registers._IR).Steps(); 
+            }catch(const std::out_of_range& e){
+                throw CPUException();
+            }
+        } break;
+
+        case OperationStep::FetchOpcode: {
+            this->FetchOpcode();
+            try{
+                INSTRUCTION_SET.at(this->registers._IR).Steps(); 
+            }catch(const std::out_of_range& e){
+                throw CPUException();
+            }        
+        } break;
+        
+        case OperationStep::LoadProgramCounter: {} break;
+        case OperationStep::FetchOperand: {} break; 
+        case OperationStep::FetchFirstOperand: {} break;
+        case OperationStep::FetchSecondOperand: {} break;
+        case OperationStep::FetchValue: {} break; 
+        case OperationStep::FetchIndexedAddress: {} break;
+        case OperationStep::FetchIndexedValue: {} break;
+        case OperationStep::FetchValueAbsolute: {} break;
+    }
+    return Byte(0);
+}
  
 Byte CPU::FetchOpcode(){
     //AB ← PC, DB ← [PC], IR ← DB, PC ← PC + 1
@@ -64,8 +62,23 @@ Byte CPU::FetchOpcode(){
 
     this->registers._IR = this->registers._DB;
     this->registers.PC++;
-   return  this->registers._IR;
+    return  this->registers._IR;
 }
+
+void CPU::Reset(){
+    this->registers.A     = 0x00;
+    this->registers.X     = 0x00;
+    this->registers.Y     = 0x00;
+    this->registers.SP    = 0x0100;
+    this->registers.P     = 0x21;
+    this->registers.PC    = 0xfffc;
+
+    this->registers._IR   = 0x00;
+    this->registers._RW   = Bit::On; // READ
+    this->registers._AB   = 0x0000;
+    this->registers._DB   = 0x00;
+    this->registers._TMP  = 0x0000;
+ }
 
 Byte CPU::FetchOperandImmediate_(Byte &reg){
     // AB ← PC, DB ← [PC], REG ← DB, PC ← PC + 1
@@ -77,7 +90,6 @@ Byte CPU::FetchOperandImmediate_(Byte &reg){
     // The next line is only for lda/ldx/ldy (for now)
     // this line and flags updates should be moved to an specific function.
     reg = this->registers._DB;
-    
     
     this->registers.PC++;
 
@@ -103,7 +115,6 @@ Byte CPU::FetchOperandZeropage(){
 
     this->registers._DB = this->memory.Get(registers._AB);
 
-    this->registers._ADL = registers._DB;
     this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
     this->registers.PC++;
     return this->registers._DB;
@@ -117,7 +128,6 @@ Byte CPU::FetchFirstOperandAbsolute(){
  
     this->registers._DB = this->memory.Get(registers._AB);
  
-    this->registers._ADL = registers._DB;
     // tmp_lo
     this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
     this->registers.PC++;
@@ -131,11 +141,16 @@ Byte CPU::FetchSecondOperandAbsolute(){
  
     this->registers._DB = this->memory.Get(registers._AB);
  
-    this->registers._ADH = registers._DB;
     // tmp_hi
-    this->registers._TMP = ((this->registers._TMP & 0x00FF) | (this->registers._ADH << 8));
+    this->registers._TMP = ((this->registers._TMP & 0x00FF) | (registers._DB << 8));
     this->registers.PC++;
     return this->registers._DB;
+}
+
+// This method load program counter during reset process
+Byte CPU::LoadProgramCounter(){
+    this->registers.PC = this->registers._TMP;
+    return Byte(0);
 }
 
 Byte CPU::FecthOperanIndirect(){
@@ -146,24 +161,14 @@ Byte CPU::FecthOperanIndirect(){
     
     this->registers._DB = this->memory.Get(registers._AB);
 
-    this->registers._ADL = registers._DB;
     this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
     this->registers.PC++;
     return this->registers._DB;
 }
 
-Byte CPU::FetchAddressZeropage_(Byte idx){
-    // tmp ← (tmp + idx) & $FF, AB ← tmp
-    // LDA $AA,X => idx = X
-    // LDX $AA,Y => idx = Y
-    // LDY $AA,X => idx = X
-    this->registers._TMP = (this->registers._TMP + idx ) & 0x00ff;
+Byte CPU::FetchValueAbsolute(){
     this->registers._AB = this->registers._TMP;
-    return this->registers._AB;
-}
-
-Byte CPU::FetchAddressZeropageA(){
-    return this->FetchAddressZeropage_(this->registers.A);
+    return this->memory.Get(this->registers._AB);
 }
 
 Byte CPU::FetchAddressZeropageX(){
@@ -202,6 +207,16 @@ Byte CPU::FetchValueZeropageY(){
     return this->FetchValueZeropage_(this->registers.Y);
 }
 
+Byte CPU::FetchAddressZeropage_(Byte idx){
+    // tmp ← (tmp + idx) & $FF, AB ← tmp
+    // LDA $AA,X => idx = X
+    // LDX $AA,Y => idx = Y
+    // LDY $AA,X => idx = X
+    this->registers._TMP = (this->registers._TMP + idx ) & 0x00ff;
+    this->registers._AB = this->registers._TMP;
+    return this->registers._AB;
+}
+
 Byte CPU::FetchValueZeropageIndexed_(Byte &reg){
     // DB ← [AB], A ← DB
     this->registers._DB = this->memory.Get(this->registers._AB);
@@ -212,6 +227,7 @@ Byte CPU::FetchValueZeropageIndexed_(Byte &reg){
 Byte CPU::FetchValueZeropageIndexedX(){
    return FetchValueZeropageIndexed_(this->registers.X);
 }
+
 Byte CPU::FetchValueZeropageIndexedY(){
     return FetchValueZeropageIndexed_(this->registers.Y);
 }

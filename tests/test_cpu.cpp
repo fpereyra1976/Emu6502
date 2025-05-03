@@ -29,8 +29,6 @@ TEST(CPU, FetchOpcode) {
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
-    EXPECT_EQ(cpu.registers._ADL,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
@@ -64,8 +62,6 @@ TEST(CPU, FetchOperandImmediateA) {
      EXPECT_EQ(cpu.registers._IR,0x00);
      EXPECT_EQ(cpu.registers.X,0x00);
      EXPECT_EQ(cpu.registers.Y,0x00);
-     EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
-     EXPECT_EQ(cpu.registers._ADL,0x00);
      EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
@@ -100,8 +96,6 @@ TEST(CPU, FetchOperandImmediateX) {
     EXPECT_EQ(cpu.registers._IR,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
-    EXPECT_EQ(cpu.registers._ADL,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
@@ -136,8 +130,6 @@ TEST(CPU, FetchOperandImmediateY) {
      EXPECT_EQ(cpu.registers._IR,0x00);
      EXPECT_EQ(cpu.registers.A,0x00);
      EXPECT_EQ(cpu.registers.X,0x00);
-     EXPECT_EQ(cpu.registers._ADH,0x80);
-     EXPECT_EQ(cpu.registers._ADL,0x00);
      EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
@@ -163,14 +155,12 @@ TEST(CPU,FetchOperandZeropage) {
     EXPECT_EQ(cpu.registers._AB,address);
     EXPECT_EQ(cpu.registers._DB,value);
     EXPECT_EQ(cpu.registers.PC,address+1);
-    EXPECT_EQ(cpu.registers._ADL,value);   
 
     // No Modified
     EXPECT_EQ(cpu.registers._IR,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
@@ -196,7 +186,6 @@ TEST(CPU,FetchFirstOperandAbsolute) {
     EXPECT_EQ(cpu.registers._AB,address);
     EXPECT_EQ(cpu.registers._DB,value);
     EXPECT_EQ(cpu.registers.PC,address+1);
-    EXPECT_EQ(cpu.registers._ADL,value);   
     EXPECT_EQ(cpu.registers._TMP,(0x00 << 8)|value);
 
     // No Modified
@@ -204,7 +193,6 @@ TEST(CPU,FetchFirstOperandAbsolute) {
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
@@ -235,7 +223,6 @@ TEST(CPU,FetchSecondOperandAbsolute){
     EXPECT_EQ(cpu.registers._AB,address+1);
     EXPECT_EQ(cpu.registers._DB,hi_value);
     EXPECT_EQ(cpu.registers.PC,address+2);
-    EXPECT_EQ(cpu.registers._ADH,hi_value);
     EXPECT_EQ(cpu.registers._TMP,(hi_value<<8)|lo_value);   
 
     // No Modified
@@ -268,7 +255,6 @@ TEST(CPU,FecthOperanIndirect) {
     EXPECT_EQ(cpu.registers._AB,address);
     EXPECT_EQ(cpu.registers._DB,value);
     EXPECT_EQ(cpu.registers.PC,address+1);
-    EXPECT_EQ(cpu.registers._ADL,value);   
     EXPECT_EQ(cpu.registers._TMP,(0x00 << 8)|value);
 
     // No Modified
@@ -276,7 +262,6 @@ TEST(CPU,FecthOperanIndirect) {
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x80);
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
@@ -309,8 +294,7 @@ TEST(CPU, FetchAddressZeropageX){
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
     EXPECT_EQ(cpu.registers._DB,0x00);
-    EXPECT_EQ(cpu.registers.PC,0x0000);
-    EXPECT_EQ(cpu.registers._ADL,0x00);   
+    EXPECT_EQ(cpu.registers.PC,0xfffc);
 }
 
 TEST(CPU, FetchAddressZeropageY){
@@ -342,8 +326,7 @@ TEST(CPU, FetchAddressZeropageY){
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers._DB,0x00);
-    EXPECT_EQ(cpu.registers.PC,0x0000);
-    EXPECT_EQ(cpu.registers._ADL,0x00);   
+    EXPECT_EQ(cpu.registers.PC,0xfffc);
 }
 
 TEST(CPU, FetchAddressZeropageXOverflow){
@@ -375,8 +358,7 @@ TEST(CPU, FetchAddressZeropageXOverflow){
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
     EXPECT_EQ(cpu.registers._DB,0x00);
-    EXPECT_EQ(cpu.registers.PC,0x0000);
-    EXPECT_EQ(cpu.registers._ADL,0x00);   
+    EXPECT_EQ(cpu.registers.PC,0xfffc);
 }
 
 TEST(CPU, FetchValueZeropageA) {
@@ -409,8 +391,6 @@ TEST(CPU, FetchValueZeropageA) {
     EXPECT_EQ(cpu.registers.PC,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
-    EXPECT_EQ(cpu.registers._ADL,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100); 
 }
 
@@ -444,8 +424,6 @@ TEST(CPU, FetchValueZeropageX) {
     EXPECT_EQ(cpu.registers.PC,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
-    EXPECT_EQ(cpu.registers._ADL,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100); 
 }
 
@@ -479,8 +457,6 @@ TEST(CPU, FetchValueZeropageY) {
     EXPECT_EQ(cpu.registers.PC,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
-    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
-    EXPECT_EQ(cpu.registers._ADL,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100); 
 }
 
@@ -515,8 +491,6 @@ TEST(CPU, FetchValueZeropageIndexedX) {
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
     EXPECT_EQ(cpu.registers._TMP,0x0000);
-    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
-    EXPECT_EQ(cpu.registers._ADL,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100); 
 }
 
@@ -551,7 +525,5 @@ TEST(CPU, FetchValueZeropageIndexedY) {
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers._TMP,0x0000);
-    EXPECT_EQ(cpu.registers._ADH,0x80); // Default Address
-    EXPECT_EQ(cpu.registers._ADL,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100); 
 }

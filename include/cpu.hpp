@@ -13,8 +13,9 @@ namespace CPU6502{
 
     class CPU{
         private:
-        OperationStep state;
+            OperationStep state;
             Memory &memory;
+            bool clockState;
 
             Byte FetchOperandImmediate_(Byte &reg);
             Byte FetchAddressZeropage_(Byte idx);
@@ -24,11 +25,11 @@ namespace CPU6502{
         public:
             Registers registers;
 
-            CPU(Memory &memory) : state(OperationStep::FetchOpcode), memory(memory) {}
-            void Reset();
-            Byte OnTick();
+            CPU(Memory &memory) : state(OperationStep::Reset), memory(memory), clockState(false) {}
+            void Start();
             Byte ExecuteCycle();
 
+            void Reset();
             // Fetch Opcode common for all addressing modes
             Byte FetchOpcode();
 
@@ -45,11 +46,11 @@ namespace CPU6502{
             Byte FecthOperanIndirect();
 
             // Fetch Address
-            Byte FetchAddressZeropageA();
             Byte FetchAddressZeropageX();
             Byte FetchAddressZeropageY();
 
             // Fetch Values
+            Byte FetchValueAbsolute();
             Byte FetchValueZeropageA();
             Byte FetchValueZeropageX();
             Byte FetchValueZeropageY();
@@ -57,8 +58,8 @@ namespace CPU6502{
             Byte FetchValueZeropageIndexedX(); // Depends on FetchAddressZeropage
             Byte FetchValueZeropageIndexedY(); // Depends on FetchAddressZeropage
 
+            Byte LoadProgramCounter();
 
- 
             void UpdateFlags();
     };
 }

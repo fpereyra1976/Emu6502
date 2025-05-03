@@ -9,5 +9,5 @@
 int main(){
     CPU6502::Memory mem;
     CPU6502::CPU cpu(mem);
-    cpu.OnTick();
+    cpu.Start();
 }

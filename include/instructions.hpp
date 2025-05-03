@@ -11,77 +11,107 @@
 #include "exceptions.hpp"
 #include "memory.hpp"
 
-namespace CPU6502{
-    enum class OperationTarget : Byte {
-        Nil     = 0x00,
-        A       = 0x01,
-        X       = 0x02,
-        Y       = 0x08,
-        TMP     = 0x20,
-        ADL     = 0x40,
-        ADH     = 0x80,
-        MEMORY  = 0x80
-    };
-    
-    enum class OperationType : u_int8_t {
-        Reset           = 0x00,
-        FetchOpcode     = 0x01,
-        FetchOperand    = 0x02
+namespace CPU6502{    
+    enum class OperationStep : Byte {
+        Reset               = 0x01,
+        FetchOpcode         = 0x02,
+        FetchOperand        = 0x03,
+        FetchFirstOperand   = 0x04,
+        FetchSecondOperand  = 0x05,
+        FetchValue          = 0x06,
+        FetchIndexedAddress = 0x07,
+        FetchIndexedValue   = 0x08,
+        FetchValueAbsolute  = 0x09,
+        LoadProgramCounter  = 0x0A,
     };
 
-    class Operation{
-        private:
-            OperationType type;
-            OperationTarget target;
-        public:
-
-        constexpr Operation(OperationType ty, OperationTarget tg): type(ty), target(tg) {}
-        constexpr OperationType getType() const { return type; }
-        constexpr OperationTarget getTarget() const { return target; }   
+    enum class AddressingMode : Byte {
+        IMPLICIT            = 0x01,
+        IMMEDIATE           = 0x02,   
+        ZEROPAGE            = 0x03,
+        ABSOLUTE            = 0x04,
+        INDIRECT            = 0x05,
+        INDEXED             = 0x06
     };
-    
-    constexpr Operation RESET(OperationType::Reset, OperationTarget::Nil);
-    constexpr Operation FETCH_OPCODE(OperationType::FetchOpcode, OperationTarget::Nil);
-    constexpr Operation FETCH_OPERAND_A(OperationType::FetchOperand, OperationTarget::A);
-    constexpr Operation FETCH_OPERAND_X(OperationType::FetchOperand, OperationTarget::X);
-    constexpr Operation FETCH_OPERAND_Y(OperationType::FetchOperand, OperationTarget::Y);
-    constexpr Operation FETCH_OPERAND_ADL(OperationType::FetchOperand, OperationTarget::ADL);
-    constexpr Operation FETCH_OPERAND_ADH(OperationType::FetchOperand, OperationTarget::ADH);
-    constexpr Operation JUMP(OperationType::FetchOperand, OperationTarget::ADH);
     
     class Instruction {
         private:
-            Byte opcode;
-            std::vector<Operation> operations;
+            Byte operationCode;
+            AddressingMode addressingMode;
+            std::vector<OperationStep> steps;
         public:
-            Instruction(Byte opc, std::initializer_list<Operation> ops)
-                : opcode(opc), operations(ops) {}
+            Instruction(Byte opc, AddressingMode m ,std::initializer_list<OperationStep> s)
+                : operationCode(opc), addressingMode(m) ,steps(s) {}
     
-            Byte getOpcode() const { return opcode; }
-            const std::vector<Operation>& getOperations() const { return operations; }
+            Byte Opcode() const { return operationCode; }
+            const std::vector<OperationStep>& Steps() const { return steps; }
     };
 
     const Instruction RESET_SIGNAL = Instruction(
         0x00, // RESET
-        { RESET }
+        AddressingMode::ABSOLUTE,
+        { 
+            OperationStep::Reset,
+            OperationStep::FetchFirstOperand,
+            OperationStep::FetchSecondOperand,
+            OperationStep::LoadProgramCounter, 
+        }
     );
 
     const Instruction NOP_IMPLICIT = Instruction(
         0xEA, // opcode de LDA #immediate
-        { FETCH_OPCODE }
+        AddressingMode::IMPLICIT,
+        {
+            OperationStep::FetchOpcode
+        } 
     );
-
     const Instruction LDA_IMMEDIATE = Instruction(
         0xA9, // opcode de LDA #immediate
-        { FETCH_OPCODE, FETCH_OPERAND_A }
+        AddressingMode::IMMEDIATE,
+        { 
+            OperationStep::FetchOpcode,
+            OperationStep::FetchOperand, 
+        }
     );
+
+    const Instruction LDA_ZEROPAGE = Instruction(
+        0xA5, // opcode de LDA #immediate
+        AddressingMode::ZEROPAGE,
+        { 
+            OperationStep::FetchOpcode,
+            OperationStep::FetchOperand,
+            OperationStep::FetchValue 
+        }
+    );
+
+    const Instruction LDA_ZEROPAGE_X = Instruction(
+        0xB5, // opcode de LDA #immediate
+        AddressingMode::ZEROPAGE,
+        { 
+            OperationStep::FetchOpcode,
+            OperationStep::FetchOperand,
+            OperationStep::FetchIndexedAddress,
+            OperationStep::FetchIndexedValue 
+        }
+    );
+    
+
     const Instruction LDX_IMMEDIATE = Instruction(
         0xA9, // opcode de LDA #immediate
-        { FETCH_OPCODE, FETCH_OPERAND_X }
+        AddressingMode::IMMEDIATE,
+        { 
+            OperationStep::FetchOpcode,
+            OperationStep::FetchOperand 
+        }
     );
+
     const Instruction LDY_IMMEDIATE = Instruction(
         0xA9, // opcode de LDA #immediate
-        { FETCH_OPCODE, FETCH_OPERAND_Y }
+        AddressingMode::IMMEDIATE,
+        { 
+            OperationStep::FetchOpcode,
+            OperationStep::FetchOperand 
+        }
     );
 
     const std::map<Byte, Instruction> INSTRUCTION_SET = {
@@ -92,6 +122,5 @@ namespace CPU6502{
         // ...
     };
 }
-
 
 #endif
