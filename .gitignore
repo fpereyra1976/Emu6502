@@ -1,5 +1,6 @@
 **/*.o
 cpu
+default.profraw
 test_runner
 build/cpu.dSYM/** 
 build/test_runner.dSYM/** 
