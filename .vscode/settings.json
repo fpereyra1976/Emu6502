@@ -1,5 +1,9 @@
 {
     "testMate.cpp.test.executables": "build/test_runner",
-    "C_Cpp.codeAnalysis.clangTidy.path": "/usr/local/opt/llvm/bin/clang-tidy"
+    "C_Cpp.codeAnalysis.clangTidy.path": "/usr/local/opt/llvm/bin/clang-tidy",
+    "files.associations": {
+        "vector": "cpp",
+        "stdexcept": "cpp"
+    }
 }
   

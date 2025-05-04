@@ -3,43 +3,24 @@
     "configurations": [
       {
         "name": "Run Main App",
-        "type": "cppdbg",
+        "type": "lldb",
         "request": "launch",
         "program": "${workspaceFolder}/build/cpu",  // Ruta al ejecutable
         "args": [],
-        "stopAtEntry": true,
         "cwd": "${workspaceFolder}",
-        "environment": [],
-        "externalConsole": false,
         "preLaunchTask": "build",
-        "MIMode": "lldb",  // Usás clang++, por lo tanto LLDB
-        "setupCommands": [
-          {
-            "description": "Enable pretty-printing for LLDB",
-            "text": "settings set target.pretty-printing true",
-            "ignoreFailures": true
-          }
-        ]
+        "stopOnEntry": false
+
       },
       {
         "name": "Run Test Suite",
-        "type": "cppdbg",
+        "type": "lldb",
         "request": "launch",
         "program": "${workspaceFolder}/build/test_runner",
         "args": [],
-        "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
-        "environment": [],
-        "externalConsole": false,
-        "preLaunchTask": "build-test",
-        "MIMode": "lldb",
-        "setupCommands": [
-          {
-            "description": "Enable pretty-printing for LLDB",
-            "text": "settings set target.pretty-printing true",
-            "ignoreFailures": true
-          }
-        ]
+        "stopOnEntry": false,
+        "preLaunchTask": "build-test"
       }
     ]
   }
