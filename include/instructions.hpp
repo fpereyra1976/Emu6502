@@ -34,18 +34,24 @@ namespace CPU6502{
         INDEXED             = 0x06
     };
     
+    using OperarionStepsSequence = std::vector<OperationStep>;
+
     class Instruction {
         private:
             Byte operationCode;
             AddressingMode addressingMode;
-            std::vector<OperationStep> steps;
+            OperarionStepsSequence steps;
         public:
-            Instruction(Byte opc, AddressingMode m ,std::initializer_list<OperationStep> s)
+            Instruction(Byte opc, AddressingMode m ,OperarionStepsSequence s)
                 : operationCode(opc), addressingMode(m) ,steps(s) {}
     
             Byte Opcode() const { return operationCode; }
-            const std::vector<OperationStep>& Steps() const { return steps; }
+            std::vector<OperationStep>& Steps() { return steps; }
     };
+
+    using InstructionSet = std::map<Byte, Instruction>;
+    using OperarionStepsSequenceIterator = OperarionStepsSequence::const_iterator;
+
 
     const Instruction RESET_SIGNAL = Instruction(
         0x00, // RESET
@@ -114,7 +120,14 @@ namespace CPU6502{
         }
     );
 
-    const std::map<Byte, Instruction> INSTRUCTION_SET = {
+    const InstructionSet INSTRUCTION_SET = {
+        { 0x00, RESET_SIGNAL },
+        { 0xEA, NOP_IMPLICIT },
+        { 0xA5, LDA_ZEROPAGE },
+        { 0xB5, LDA_ZEROPAGE_X },
+        { 0xA5, LDA_IMMEDIATE },
+        { 0xA2, LDX_IMMEDIATE },
+        { 0xA9, LDY_IMMEDIATE },
         { 0xEA, NOP_IMPLICIT },
         { 0xA9, LDA_IMMEDIATE },
         { 0xA2, LDX_IMMEDIATE },

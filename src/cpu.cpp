@@ -6,6 +6,8 @@
 namespace CPU6502{
 
 void CPU::Start(){
+    // Set the initial state
+    this->state = OperationStep::Reset;
     while(1){
         std::this_thread::sleep_for(std::chrono::nanoseconds(500));  // 0.5 µs
         this->clockState = !this->clockState;
@@ -17,34 +19,84 @@ void CPU::Start(){
             }
         }
     }
- }
+}
 
 Byte CPU::ExecuteCycle(){
-    // This is the default stateº
+    // This is the default state
     switch(this->state){
-        
         case OperationStep::Reset: {
             this->Reset();
             try{
-                INSTRUCTION_SET.at(this->registers._IR).Steps(); 
+                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
+                this->operarionStepsSequenceIterator = steps.cbegin();
+                if (this->operarionStepsSequenceIterator == steps.cend()){
+                    this->state = OperationStep::FetchOpcode;
+                } else{
+                    ++this->operarionStepsSequenceIterator;
+                    this->state = *this->operarionStepsSequenceIterator;
+                } 
             }catch(const std::out_of_range& e){
                 throw CPUException();
             }
         } break;
-
         case OperationStep::FetchOpcode: {
             this->FetchOpcode();
             try{
-                INSTRUCTION_SET.at(this->registers._IR).Steps(); 
+                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
+                this->operarionStepsSequenceIterator = steps.cbegin();
+                if (this->operarionStepsSequenceIterator == steps.cend()){
+                    this->state = OperationStep::FetchOpcode;
+                }else{
+                    ++this->operarionStepsSequenceIterator;
+                    this->state = *this->operarionStepsSequenceIterator;  
+                }
             }catch(const std::out_of_range& e){
                 throw CPUException();
-            }        
+            }
         } break;
-        
-        case OperationStep::LoadProgramCounter: {} break;
         case OperationStep::FetchOperand: {} break; 
-        case OperationStep::FetchFirstOperand: {} break;
-        case OperationStep::FetchSecondOperand: {} break;
+        case OperationStep::FetchFirstOperand: {
+            this->FetchFirstOperandAbsolute();
+            try{
+                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
+                ++this->operarionStepsSequenceIterator;
+                if (this->operarionStepsSequenceIterator == steps.cend()){
+                    this->state = OperationStep::FetchOpcode;
+                }else{
+                    this->state = *this->operarionStepsSequenceIterator;
+                }
+            }catch(const std::out_of_range& e){
+                throw CPUException();
+            }
+        } break;
+        case OperationStep::FetchSecondOperand: {
+            this->FetchSecondOperandAbsolute();
+            try{
+                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
+                ++this->operarionStepsSequenceIterator;
+                if (this->operarionStepsSequenceIterator == steps.cend()){
+                    this->state = OperationStep::FetchOpcode;
+                }else{
+                    this->state = *this->operarionStepsSequenceIterator;
+                }
+            }catch(const std::out_of_range& e){
+                throw CPUException();
+            }
+        } break;
+        case OperationStep::LoadProgramCounter: {
+            this->LoadProgramCounter();
+            try{
+                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
+                this->operarionStepsSequenceIterator++;
+                if (this->operarionStepsSequenceIterator == steps.cend()){
+                    this->state = OperationStep::FetchOpcode;
+                }else{
+                    this->state = *this->operarionStepsSequenceIterator;
+                }
+            }catch(const std::out_of_range& e){
+                throw CPUException();
+            }
+        } break;
         case OperationStep::FetchValue: {} break; 
         case OperationStep::FetchIndexedAddress: {} break;
         case OperationStep::FetchIndexedValue: {} break;

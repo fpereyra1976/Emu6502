@@ -14,8 +14,11 @@ namespace CPU6502{
     class CPU{
         private:
             OperationStep state;
+            InstructionSet instructionSet;
             Memory &memory;
             bool clockState;
+
+            OperarionStepsSequenceIterator operarionStepsSequenceIterator;
 
             Byte FetchOperandImmediate_(Byte &reg);
             Byte FetchAddressZeropage_(Byte idx);
@@ -25,7 +28,12 @@ namespace CPU6502{
         public:
             Registers registers;
 
-            CPU(Memory &memory) : state(OperationStep::Reset), memory(memory), clockState(false) {}
+            CPU(Memory &memory,const InstructionSet i=INSTRUCTION_SET) : 
+                state(OperationStep::Reset), 
+                instructionSet(i), 
+                memory(memory), 
+                clockState(false) {}
+
             void Start();
             Byte ExecuteCycle();
 
@@ -63,5 +71,4 @@ namespace CPU6502{
             void UpdateFlags();
     };
 }
-
 #endif
