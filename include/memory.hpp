@@ -32,7 +32,8 @@ namespace CPU6502{
 
                 // Reset Vector
                 data[0xFFFC] = 0x00;
-                data[0xFFFD] = 0x80;
+                data[0xFFFD] = 0x08;
+                data[0x0800] = 0xea;
             }
 
             // Lectura y escritura

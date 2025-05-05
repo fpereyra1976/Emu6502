@@ -38,6 +38,8 @@ namespace CPU6502{
             Byte ExecuteCycle();
 
             void Reset();
+            void DoNothing();
+
             // Fetch Opcode common for all addressing modes
             Byte FetchOpcode();
 

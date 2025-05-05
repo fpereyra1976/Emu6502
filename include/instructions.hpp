@@ -13,6 +13,7 @@
 
 namespace CPU6502{    
     enum class OperationStep : Byte {
+        Nothing             = 0x00,
         Reset               = 0x01,
         FetchOpcode         = 0x02,
         FetchOperand        = 0x03,
@@ -54,7 +55,9 @@ namespace CPU6502{
 
 
     const Instruction RESET_SIGNAL = Instruction(
-        0x00, // RESET
+        0xFC , 
+        // No es un opcode oficial, lo aprovecho para que el reser
+        // se comporte de modo similar a un opcode
         AddressingMode::ABSOLUTE,
         { 
             OperationStep::Reset,
@@ -64,15 +67,26 @@ namespace CPU6502{
         }
     );
 
-    const Instruction NOP_IMPLICIT = Instruction(
-        0xEA, // opcode de LDA #immediate
+    const Instruction BRK_IMPLICIT = Instruction(
+        0xea, // opcode de LDA #immediate
         AddressingMode::IMPLICIT,
         {
-            OperationStep::FetchOpcode
+            OperationStep::FetchOpcode,
+            OperationStep::Nothing,
         } 
     );
+
+    const Instruction NOP_IMPLICIT = Instruction(
+        0xea, // opcode de LDA #immediate
+        AddressingMode::IMPLICIT,
+        {
+            OperationStep::FetchOpcode,
+            OperationStep::Nothing,
+        } 
+    );
+
     const Instruction LDA_IMMEDIATE = Instruction(
-        0xA9, // opcode de LDA #immediate
+        0xa9, // opcode de LDA #immediate
         AddressingMode::IMMEDIATE,
         { 
             OperationStep::FetchOpcode,
@@ -81,7 +95,7 @@ namespace CPU6502{
     );
 
     const Instruction LDA_ZEROPAGE = Instruction(
-        0xA5, // opcode de LDA #immediate
+        0xa5, // opcode de LDA #immediate
         AddressingMode::ZEROPAGE,
         { 
             OperationStep::FetchOpcode,
@@ -91,7 +105,7 @@ namespace CPU6502{
     );
 
     const Instruction LDA_ZEROPAGE_X = Instruction(
-        0xB5, // opcode de LDA #immediate
+        0xb5, // opcode de LDA #immediate
         AddressingMode::ZEROPAGE,
         { 
             OperationStep::FetchOpcode,
@@ -103,7 +117,7 @@ namespace CPU6502{
     
 
     const Instruction LDX_IMMEDIATE = Instruction(
-        0xA9, // opcode de LDA #immediate
+        0xa2, // opcode de LDA #immediate
         AddressingMode::IMMEDIATE,
         { 
             OperationStep::FetchOpcode,
@@ -112,7 +126,7 @@ namespace CPU6502{
     );
 
     const Instruction LDY_IMMEDIATE = Instruction(
-        0xA9, // opcode de LDA #immediate
+        0xa0, // opcode de LDA #immediate
         AddressingMode::IMMEDIATE,
         { 
             OperationStep::FetchOpcode,
@@ -121,7 +135,7 @@ namespace CPU6502{
     );
 
     const InstructionSet INSTRUCTION_SET = {
-        { 0x00, RESET_SIGNAL },
+        { 0x00, BRK_IMPLICIT },
         { 0xEA, NOP_IMPLICIT },
         { 0xA5, LDA_ZEROPAGE },
         { 0xB5, LDA_ZEROPAGE_X },
@@ -131,7 +145,9 @@ namespace CPU6502{
         { 0xEA, NOP_IMPLICIT },
         { 0xA9, LDA_IMMEDIATE },
         { 0xA2, LDX_IMMEDIATE },
-        { 0xA9, LDY_IMMEDIATE }
+        { 0xA9, LDY_IMMEDIATE },
+        { 0xFC, RESET_SIGNAL }
+
         // ...
     };
 }

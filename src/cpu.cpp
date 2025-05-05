@@ -24,6 +24,20 @@ void CPU::Start(){
 Byte CPU::ExecuteCycle(){
     // This is the default state
     switch(this->state){
+        case OperationStep::Nothing: {
+            this->DoNothing();
+            try{
+                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
+                ++this->operarionStepsSequenceIterator;
+                if (this->operarionStepsSequenceIterator == steps.cend()){
+                    this->state = OperationStep::FetchOpcode;
+                }else{
+                    this->state = *this->operarionStepsSequenceIterator;
+                }
+            }catch(const std::out_of_range& e){
+                throw CPUException();
+            }
+        } break;
         case OperationStep::Reset: {
             this->Reset();
             try{
@@ -125,11 +139,19 @@ void CPU::Reset(){
     this->registers.P     = 0x21;
     this->registers.PC    = 0xfffc;
 
-    this->registers._IR   = 0x00;
+    this->registers._IR   = 0xFC;
     this->registers._RW   = Bit::On; // READ
     this->registers._AB   = 0x0000;
     this->registers._DB   = 0x00;
     this->registers._TMP  = 0x0000;
+ }
+
+ void CPU::DoNothing(){
+    // Do nothing
+    this->registers._RW = Bit::On;
+    this->registers._AB = 0x0000;
+    this->registers._DB = 0x00;
+    this->registers._TMP = 0x0000;
  }
 
 Byte CPU::FetchOperandImmediate_(Byte &reg){
