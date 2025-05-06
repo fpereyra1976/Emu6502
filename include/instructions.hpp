@@ -13,7 +13,6 @@
 
 namespace CPU6502{    
     enum class OperationStep : Byte {
-        Nothing             = 0x00,
         Reset               = 0x01,
         FetchOpcode         = 0x02,
         FetchOperand        = 0x03,
@@ -47,13 +46,26 @@ namespace CPU6502{
             Instruction(Byte opc, AddressingMode m ,OperarionStepsSequence s,Byte (*a)(Registers &reg, Memory &mem) = nullptr)
                 : operationCode(opc), addressingMode(m) ,steps(s), action(a) {}
     
-            Byte Opcode() const { return operationCode; }
+            Byte Opcode() const { 
+                return operationCode; 
+            }
+
+            Byte Execute(Registers &reg, Memory &mem) {
+                if (action != nullptr) {
+                    return action(reg, mem);
+                }
+                return 0;
+            }
+
             std::vector<OperationStep>& Steps() { return steps; }
     };
 
     using InstructionSet = std::map<Byte, Instruction>;
     using OperarionStepsSequenceIterator = OperarionStepsSequence::const_iterator;
 
+    Byte Reset(Registers &reg, Memory &mem);
+    Byte NOP(Registers &reg, Memory &mem);
+    Byte BRK(Registers &reg, Memory &mem);
     Byte LDA(Registers &reg, Memory &mem);
     Byte LDX(Registers &reg, Memory &mem);
     Byte LDY(Registers &reg, Memory &mem);
@@ -67,33 +79,28 @@ namespace CPU6502{
             OperationStep::Reset,
             OperationStep::FetchFirstOperand,
             OperationStep::FetchSecondOperand,
-            OperationStep::LoadProgramCounter, 
-        }
+        },
+        Reset
     );
 
     const Instruction BRK_IMPLICIT = Instruction(
         0xea, // opcode de LDA #immediate
         AddressingMode::IMPLICIT,
-        {
-            OperationStep::FetchOpcode,
-            OperationStep::Nothing,
-        } 
+        {},
+        BRK 
     );
 
     const Instruction NOP_IMPLICIT = Instruction(
         0xea, // opcode de LDA #immediate
         AddressingMode::IMPLICIT,
-        {
-            OperationStep::FetchOpcode,
-            OperationStep::Nothing,
-        } 
+        {},
+        NOP 
     );
 
     const Instruction LDA_IMMEDIATE = Instruction(
         0xa9, // opcode de LDA #immediate
         AddressingMode::IMMEDIATE,
         { 
-            OperationStep::FetchOpcode,
             OperationStep::FetchOperand, 
         },
         LDA
@@ -103,7 +110,6 @@ namespace CPU6502{
         0xa5, // opcode de LDA #immediate
         AddressingMode::ZEROPAGE,
         { 
-            OperationStep::FetchOpcode,
             OperationStep::FetchOperand,
             OperationStep::FetchValue 
         },
@@ -114,7 +120,6 @@ namespace CPU6502{
         0xb5, // opcode de LDA #immediate
         AddressingMode::ZEROPAGE,
         { 
-            OperationStep::FetchOpcode,
             OperationStep::FetchOperand,
             OperationStep::FetchIndexedAddress,
             OperationStep::FetchIndexedValue 
@@ -127,7 +132,6 @@ namespace CPU6502{
         0xa2, // opcode de LDA #immediate
         AddressingMode::IMMEDIATE,
         { 
-            OperationStep::FetchOpcode,
             OperationStep::FetchOperand 
         },
         LDX
@@ -137,7 +141,6 @@ namespace CPU6502{
         0xa0, // opcode de LDA #immediate
         AddressingMode::IMMEDIATE,
         { 
-            OperationStep::FetchOpcode,
             OperationStep::FetchOperand 
         },
         LDY

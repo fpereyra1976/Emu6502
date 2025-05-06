@@ -68,8 +68,6 @@ namespace CPU6502{
             Byte FetchValueZeropageIndexedX(); // Depends on FetchAddressZeropage
             Byte FetchValueZeropageIndexedY(); // Depends on FetchAddressZeropage
 
-            Byte LoadProgramCounter();
-
             void UpdateFlags();
     };
 }

@@ -9,7 +9,7 @@ TEST(CPU, FetchOpcode) {
     CPU6502::Byte nop = CPU6502::Byte(0xEA);
     CPU6502::Word address = CPU6502::Word(0x0000);
 
-    memory.Set(address,nop);  // NOP Operation
+    memory.Write(address,nop);  // NOP Operation
 
     // Remove when reset method is completed
     cpu.Reset();
@@ -40,7 +40,7 @@ TEST(CPU, FetchOperandImmediateA) {
     CPU6502::CPU cpu(memory);
     CPU6502::Byte value = CPU6502::Byte(0xAA);
     CPU6502::Word address = CPU6502::Word(0x0001);
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
     
     // Remove when reset method is completed
     cpu.Reset();
@@ -73,7 +73,7 @@ TEST(CPU, FetchOperandImmediateX) {
     CPU6502::CPU cpu(memory);
     CPU6502::Byte value = CPU6502::Byte(0xAA);
     CPU6502::Word address = CPU6502::Word(0x0001);
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
     
     // Remove when reset method is completed
     cpu.Reset();
@@ -107,7 +107,7 @@ TEST(CPU, FetchOperandImmediateY) {
     CPU6502::CPU cpu(memory);
     CPU6502::Byte value = CPU6502::Byte(0xAA);
     CPU6502::Word address = CPU6502::Word(0x0001);
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
     
     // Remove when reset method is completed
     cpu.Reset();
@@ -139,7 +139,7 @@ TEST(CPU,FetchOperandZeropage) {
     CPU6502::CPU cpu(memory);
     CPU6502::Byte value = CPU6502::Byte(0xAB);
     CPU6502::Word address = CPU6502::Word(0x0001);
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
     
     // Remove when reset method is completed
     cpu.Reset();
@@ -170,7 +170,7 @@ TEST(CPU,FetchFirstOperandAbsolute) {
     CPU6502::CPU cpu(memory);
     CPU6502::Byte value = CPU6502::Byte(0xAB);
     CPU6502::Word address = CPU6502::Word(0x0001);
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
     
     // Remove when reset method is completed
     cpu.Reset();
@@ -204,8 +204,8 @@ TEST(CPU,FetchSecondOperandAbsolute){
     CPU6502::Byte hi_value = CPU6502::Byte(0x12);
 
     CPU6502::Word address = CPU6502::Word(0x0001);
-    memory.Set(address,lo_value);  // Ser Value
-    memory.Set(address+1,hi_value);  // Ser Value
+    memory.Write(address,lo_value);  // Write Value
+    memory.Write(address+1,hi_value);  // Write Value
     
     // Remove when reset method is completed
     cpu.Reset();
@@ -239,7 +239,7 @@ TEST(CPU,FecthOperanIndirect) {
     CPU6502::CPU cpu(memory);
     CPU6502::Byte value = CPU6502::Byte(0xAB);
     CPU6502::Word address = CPU6502::Word(0x0001);
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
     
     // Remove when reset method is completed
     cpu.Reset();
@@ -278,7 +278,7 @@ TEST(CPU, FetchAddressZeropageX){
     cpu.registers._TMP = address;
     cpu.registers.X = offset;
 
-    memory.Set(address+offset,value);  // Ser Value
+    memory.Write(address+offset,value);  // Write Value
 
     CPU6502::Byte db = cpu.FetchAddressZeropageX();
 
@@ -311,7 +311,7 @@ TEST(CPU, FetchAddressZeropageY){
     cpu.registers._TMP = address;
     cpu.registers.Y = offset;
 
-    memory.Set(address+offset,value);  // Ser Value
+    memory.Write(address+offset,value);  // Write Value
 
     CPU6502::Byte db = cpu.FetchAddressZeropageY();
 
@@ -344,7 +344,7 @@ TEST(CPU, FetchAddressZeropageXOverflow){
     cpu.registers._TMP = address;
     cpu.registers.X = offset;
 
-    memory.Set(address+offset,value);  // Ser Value
+    memory.Write(address+offset,value);  // Write Value
 
     CPU6502::Byte db = cpu.FetchAddressZeropageX();
 
@@ -371,7 +371,7 @@ TEST(CPU, FetchValueZeropageA) {
     CPU6502::Byte value = CPU6502::Byte(0xA0);
     CPU6502::Word address = CPU6502::Word(0x0001);
 
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
 
     // Remove when reset method is completed
     cpu.Reset();
@@ -404,7 +404,7 @@ TEST(CPU, FetchValueZeropageX) {
     CPU6502::Byte value = CPU6502::Byte(0xA0);
     CPU6502::Word address = CPU6502::Word(0x0001);
 
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
 
     // Remove when reset method is completed
     cpu.Reset();
@@ -437,7 +437,7 @@ TEST(CPU, FetchValueZeropageY) {
     CPU6502::Byte value = CPU6502::Byte(0xA0);
     CPU6502::Word address = CPU6502::Word(0x0001);
 
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
 
     // Remove when reset method is completed
     cpu.Reset();
@@ -475,7 +475,7 @@ TEST(CPU, FetchValueZeropageIndexedX) {
 
     cpu.registers.PC = 0x00;
     cpu.registers._AB = address;
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
     
     CPU6502::Byte result = cpu.FetchValueZeropageIndexedX();
 
@@ -509,7 +509,7 @@ TEST(CPU, FetchValueZeropageIndexedY) {
 
     cpu.registers.PC = 0x00;
     cpu.registers._AB = address;
-    memory.Set(address,value);  // Ser Value
+    memory.Write(address,value);  // Write Value
     
     CPU6502::Byte result = cpu.FetchValueZeropageIndexedY();
 

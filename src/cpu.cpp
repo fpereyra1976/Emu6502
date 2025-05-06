@@ -24,20 +24,6 @@ void CPU::Start(){
 Byte CPU::ExecuteCycle(){
     // This is the default state
     switch(this->state){
-        case OperationStep::Nothing: {
-            this->DoNothing();
-            try{
-                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
-                ++this->operarionStepsSequenceIterator;
-                if (this->operarionStepsSequenceIterator == steps.cend()){
-                    this->state = OperationStep::FetchOpcode;
-                }else{
-                    this->state = *this->operarionStepsSequenceIterator;
-                }
-            }catch(const std::out_of_range& e){
-                throw CPUException();
-            }
-        } break;
         case OperationStep::Reset: {
             this->Reset();
             try{
@@ -56,9 +42,11 @@ Byte CPU::ExecuteCycle(){
         case OperationStep::FetchOpcode: {
             this->FetchOpcode();
             try{
-                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
+                auto &instruction = this->instructionSet.at(this->registers._IR);
+                auto &steps = instruction.Steps();
                 this->operarionStepsSequenceIterator = steps.cbegin();
                 if (this->operarionStepsSequenceIterator == steps.cend()){
+                    instruction.Execute(this->registers, this->memory);
                     this->state = OperationStep::FetchOpcode;
                 }else{
                     ++this->operarionStepsSequenceIterator;
@@ -72,9 +60,11 @@ Byte CPU::ExecuteCycle(){
         case OperationStep::FetchFirstOperand: {
             this->FetchFirstOperandAbsolute();
             try{
-                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
+                auto &instruction = this->instructionSet.at(this->registers._IR);
+                auto &steps = instruction.Steps();
                 ++this->operarionStepsSequenceIterator;
                 if (this->operarionStepsSequenceIterator == steps.cend()){
+                    instruction.Execute(this->registers, this->memory);
                     this->state = OperationStep::FetchOpcode;
                 }else{
                     this->state = *this->operarionStepsSequenceIterator;
@@ -86,23 +76,11 @@ Byte CPU::ExecuteCycle(){
         case OperationStep::FetchSecondOperand: {
             this->FetchSecondOperandAbsolute();
             try{
-                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
+                auto &instruction = this->instructionSet.at(this->registers._IR);
+                auto &steps = instruction.Steps();
                 ++this->operarionStepsSequenceIterator;
                 if (this->operarionStepsSequenceIterator == steps.cend()){
-                    this->state = OperationStep::FetchOpcode;
-                }else{
-                    this->state = *this->operarionStepsSequenceIterator;
-                }
-            }catch(const std::out_of_range& e){
-                throw CPUException();
-            }
-        } break;
-        case OperationStep::LoadProgramCounter: {
-            this->LoadProgramCounter();
-            try{
-                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
-                this->operarionStepsSequenceIterator++;
-                if (this->operarionStepsSequenceIterator == steps.cend()){
+                    instruction.Execute(this->registers, this->memory);
                     this->state = OperationStep::FetchOpcode;
                 }else{
                     this->state = *this->operarionStepsSequenceIterator;
@@ -124,7 +102,7 @@ Byte CPU::FetchOpcode(){
     this->registers._RW = Bit::On;
     this->registers._AB = this->registers.PC;
     
-    this->registers._DB = this->memory.Get(registers._AB);
+    this->registers._DB = this->memory.Read(registers._AB);
 
     this->registers._IR = this->registers._DB;
     this->registers.PC++;
@@ -159,7 +137,7 @@ Byte CPU::FetchOperandImmediate_(Byte &reg){
     this->registers._RW = Bit::On;
     this->registers._AB = this->registers.PC;
 
-    this->registers._DB = this->memory.Get(registers._AB);
+    this->registers._DB = this->memory.Read(registers._AB);
   
     // The next line is only for lda/ldx/ldy (for now)
     // this line and flags updates should be moved to an specific function.
@@ -187,7 +165,7 @@ Byte CPU::FetchOperandZeropage(){
     this->registers._RW = Bit::On;
     this->registers._AB = this->registers.PC;
 
-    this->registers._DB = this->memory.Get(registers._AB);
+    this->registers._DB = this->memory.Read(registers._AB);
 
     this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
     this->registers.PC++;
@@ -200,7 +178,7 @@ Byte CPU::FetchFirstOperandAbsolute(){
     this->registers._RW = Bit::On;
     this->registers._AB = this->registers.PC;
  
-    this->registers._DB = this->memory.Get(registers._AB);
+    this->registers._DB = this->memory.Read(registers._AB);
  
     // tmp_lo
     this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
@@ -213,18 +191,12 @@ Byte CPU::FetchSecondOperandAbsolute(){
     this->registers._RW = Bit::On;
     this->registers._AB = this->registers.PC;
  
-    this->registers._DB = this->memory.Get(registers._AB);
+    this->registers._DB = this->memory.Read(registers._AB);
  
     // tmp_hi
     this->registers._TMP = ((this->registers._TMP & 0x00FF) | (registers._DB << 8));
     this->registers.PC++;
     return this->registers._DB;
-}
-
-// This method load program counter during reset process
-Byte CPU::LoadProgramCounter(){
-    this->registers.PC = this->registers._TMP;
-    return Byte(0);
 }
 
 Byte CPU::FecthOperanIndirect(){
@@ -233,7 +205,7 @@ Byte CPU::FecthOperanIndirect(){
     this->registers._RW = Bit::On;
     this->registers._AB = this->registers.PC;
     
-    this->registers._DB = this->memory.Get(registers._AB);
+    this->registers._DB = this->memory.Read(registers._AB);
 
     this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
     this->registers.PC++;
@@ -242,7 +214,7 @@ Byte CPU::FecthOperanIndirect(){
 
 Byte CPU::FetchValueAbsolute(){
     this->registers._AB = this->registers._TMP;
-    return this->memory.Get(this->registers._AB);
+    return this->memory.Read(this->registers._AB);
 }
 
 Byte CPU::FetchAddressZeropageX(){
@@ -261,7 +233,7 @@ Byte CPU::FetchValueZeropage_(Byte &reg){
     this->registers._RW = CPU6502::Bit::On;
     this->registers._AB = this->registers._TMP;
 
-    Byte value = this->memory.Get(this->registers._AB);
+    Byte value = this->memory.Read(this->registers._AB);
 
     this->registers._DB = value;
     reg = this->registers._DB;
@@ -293,7 +265,7 @@ Byte CPU::FetchAddressZeropage_(Byte idx){
 
 Byte CPU::FetchValueZeropageIndexed_(Byte &reg){
     // DB ← [AB], A ← DB
-    this->registers._DB = this->memory.Get(this->registers._AB);
+    this->registers._DB = this->memory.Read(this->registers._AB);
     reg = this->registers._DB;
     return this->registers._DB;
 }

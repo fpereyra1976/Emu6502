@@ -2,6 +2,19 @@
 #include "instructions.hpp"
 
 namespace CPU6502 {
+    Byte Reset(Registers &reg, Memory &mem){
+        reg.PC = reg._TMP;
+        return reg.PC;
+    }
+
+    Byte NOP(Registers &reg, Memory &mem){
+        return Byte(0);
+    }
+
+    Byte BRK(Registers &reg, Memory &mem){
+        return Byte(0);
+    }
+
     Byte LDA(Registers &reg, Memory &mem){
         reg.A = reg._DB;
 

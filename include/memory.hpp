@@ -14,15 +14,15 @@ namespace CPU6502{
                 this->Initialise();
             }
 
-            Byte &Get(Word p){
+            Byte &Read(Word p){
                 return this->data[p];
             }
 
-            const Byte& Get(Word p) const {
+            const Byte& Read(Word p) const {
                 return this->data[p];
             }
             
-            void Set(Word p,Byte &v){
+            void Write(Word p,Byte &v){
                 // No validation needed. (?)
                 this->data[p] = v;
             }
@@ -38,12 +38,12 @@ namespace CPU6502{
 
             // Lectura y escritura
             Byte& operator[](Word p) {
-                return Get(p);
+                return Read(p);
             }
 
             // Solo lectura (si el objeto es const)
             const Byte& operator[](Word p) const {
-                return Get(p);
+                return Read(p);
             }
     };
 };
