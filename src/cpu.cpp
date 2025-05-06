@@ -132,32 +132,15 @@ void CPU::Reset(){
     this->registers._TMP = 0x0000;
  }
 
-Byte CPU::FetchOperandImmediate_(Byte &reg){
+Byte CPU::FetchOperandImmediate(){
     // AB ← PC, DB ← [PC], REG ← DB, PC ← PC + 1
     this->registers._RW = Bit::On;
     this->registers._AB = this->registers.PC;
 
-    this->registers._DB = this->memory.Read(registers._AB);
-  
-    // The next line is only for lda/ldx/ldy (for now)
-    // this line and flags updates should be moved to an specific function.
-    reg = this->registers._DB;
-    
+    this->registers._DB = this->memory.Read(registers._AB);    
     this->registers.PC++;
 
     return this->registers._DB;
-}
-
-Byte CPU::FetchOperandImmediateA(){
-    return this->FetchOperandImmediate_(this->registers.A);
-}
-
-Byte CPU::FetchOperandImmediateX(){
-    return this->FetchOperandImmediate_(this->registers.X);
-}
-
-Byte CPU::FetchOperandImmediateY(){
-    return this->FetchOperandImmediate_(this->registers.Y);
 }
 
 Byte CPU::FetchOperandZeropage(){
@@ -213,8 +196,12 @@ Byte CPU::FecthOperanIndirect(){
 }
 
 Byte CPU::FetchValueAbsolute(){
+    // Register is loaded in Instruction function
+    this->registers._RW = Bit::On;
     this->registers._AB = this->registers._TMP;
-    return this->memory.Read(this->registers._AB);
+    auto value = this->memory.Read(this->registers._AB);
+    this->registers._DB = value;
+    return this->registers._DB;
 }
 
 Byte CPU::FetchAddressZeropageX(){
@@ -225,33 +212,18 @@ Byte CPU::FetchAddressZeropageY(){
     return this->FetchAddressZeropage_(this->registers.Y);
 }
 
-Byte CPU::FetchValueZeropage_(Byte &reg){
+Byte CPU::FetchValueZeropage(){
     // AB ← tmp, DB ← [AB], reg ← DB
-    // LDA $AA => reg = A
-    // LDX $AA => reg = X
-    // LDY $AA => reg = Y
+    // Register is loaded in Instruction function
     this->registers._RW = CPU6502::Bit::On;
     this->registers._AB = this->registers._TMP;
 
     Byte value = this->memory.Read(this->registers._AB);
 
     this->registers._DB = value;
-    reg = this->registers._DB;
-
     return this->registers._DB;
 }
 
-Byte CPU::FetchValueZeropageA(){
-    return this->FetchValueZeropage_(this->registers.A);
-}
-
-Byte CPU::FetchValueZeropageX(){
-    return this->FetchValueZeropage_(this->registers.X);
-}
-
-Byte CPU::FetchValueZeropageY(){
-    return this->FetchValueZeropage_(this->registers.Y);
-}
 
 Byte CPU::FetchAddressZeropage_(Byte idx){
     // tmp ← (tmp + idx) & $FF, AB ← tmp
@@ -263,19 +235,10 @@ Byte CPU::FetchAddressZeropage_(Byte idx){
     return this->registers._AB;
 }
 
-Byte CPU::FetchValueZeropageIndexed_(Byte &reg){
+Byte CPU::FetchValueZeropageIndexed(){
     // DB ← [AB], A ← DB
     this->registers._DB = this->memory.Read(this->registers._AB);
-    reg = this->registers._DB;
     return this->registers._DB;
-}
-
-Byte CPU::FetchValueZeropageIndexedX(){
-   return FetchValueZeropageIndexed_(this->registers.X);
-}
-
-Byte CPU::FetchValueZeropageIndexedY(){
-    return FetchValueZeropageIndexed_(this->registers.Y);
 }
 
 // Just temporary to avoid lossing this code

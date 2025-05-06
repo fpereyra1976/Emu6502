@@ -32,9 +32,7 @@ TEST(CPU, FetchOpcode) {
     EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
-TEST(CPU, FetchOperandImmediateA) {
-    // TO DOs Check P Flags
-
+TEST(CPU, FetchOperandImmediate) {
     // Given
     CPU6502::Memory memory;
     CPU6502::CPU cpu(memory);
@@ -46,7 +44,7 @@ TEST(CPU, FetchOperandImmediateA) {
     cpu.Reset();
     cpu.registers.PC    = address;
 
-    CPU6502::Byte result = cpu.FetchOperandImmediateA();
+    CPU6502::Byte result = cpu.FetchOperandImmediate();
 
      // Check Result
      EXPECT_EQ(result, value);
@@ -56,80 +54,12 @@ TEST(CPU, FetchOperandImmediateA) {
      EXPECT_EQ(cpu.registers._AB,address);
      EXPECT_EQ(cpu.registers._DB,value);
      EXPECT_EQ(cpu.registers.PC,address+1);
-     EXPECT_EQ(cpu.registers.A,value);
-
-     // No Modified
-     EXPECT_EQ(cpu.registers._IR,0xfc);
-     EXPECT_EQ(cpu.registers.X,0x00);
-     EXPECT_EQ(cpu.registers.Y,0x00);
-     EXPECT_EQ(cpu.registers.SP,0x0100);
-}
-
-TEST(CPU, FetchOperandImmediateX) {
-    // TO DOs Check P Flags
-
-    // Given
-    CPU6502::Memory memory;
-    CPU6502::CPU cpu(memory);
-    CPU6502::Byte value = CPU6502::Byte(0xAA);
-    CPU6502::Word address = CPU6502::Word(0x0001);
-    memory.Write(address,value);  // Write Value
-    
-    // Remove when reset method is completed
-    cpu.Reset();
-    cpu.registers.PC = address;
-
-    CPU6502::Byte result = cpu.FetchOperandImmediateX();
-
-     // Check Result
-    EXPECT_EQ(result, value);
-
-    // Check every register
-    EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
-    EXPECT_EQ(cpu.registers._AB,address);
-    EXPECT_EQ(cpu.registers._DB,value);
-    EXPECT_EQ(cpu.registers.PC,address+1);
-    EXPECT_EQ(cpu.registers.X,value);
-
-
-    // No Modified
-    EXPECT_EQ(cpu.registers._IR,0xfc);
-    EXPECT_EQ(cpu.registers.A,0x00);
-    EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers.SP,0x0100);
-}
-
-TEST(CPU, FetchOperandImmediateY) {
-    // TO DOs Check P Flags
-
-    // Given
-    CPU6502::Memory memory;
-    CPU6502::CPU cpu(memory);
-    CPU6502::Byte value = CPU6502::Byte(0xAA);
-    CPU6502::Word address = CPU6502::Word(0x0001);
-    memory.Write(address,value);  // Write Value
-    
-    // Remove when reset method is completed
-    cpu.Reset();
-    cpu.registers.PC = address;
-
-    CPU6502::Byte result = cpu.FetchOperandImmediateY();
-
-     // Check Result
-     EXPECT_EQ(result, value);
-
-     // Check every register
-     EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
-     EXPECT_EQ(cpu.registers._AB,address);
-     EXPECT_EQ(cpu.registers._DB,value);
-     EXPECT_EQ(cpu.registers.PC,address+1);
-     EXPECT_EQ(cpu.registers.Y,value);
-
 
      // No Modified
      EXPECT_EQ(cpu.registers._IR,0xfc);
      EXPECT_EQ(cpu.registers.A,0x00);
      EXPECT_EQ(cpu.registers.X,0x00);
+     EXPECT_EQ(cpu.registers.Y,0x00);
      EXPECT_EQ(cpu.registers.SP,0x0100);
 }
 
@@ -364,7 +294,7 @@ TEST(CPU, FetchAddressZeropageXOverflow){
     EXPECT_EQ(cpu.registers.PC,0xfffc);
 }
 
-TEST(CPU, FetchValueZeropageA) {
+TEST(CPU, FetchValueZeropage) {
     // Given
     CPU6502::Memory memory;
     CPU6502::CPU cpu(memory);
@@ -378,7 +308,7 @@ TEST(CPU, FetchValueZeropageA) {
 
     cpu.registers.PC = 0x00;
     cpu.registers._TMP = address;
-    CPU6502::Byte result = cpu.FetchValueZeropageA();
+    CPU6502::Byte result = cpu.FetchValueZeropage();
 
      // Check Result
     EXPECT_EQ(result, value);
@@ -387,83 +317,17 @@ TEST(CPU, FetchValueZeropageA) {
     EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
     EXPECT_EQ(cpu.registers._AB,address);
     EXPECT_EQ(cpu.registers._DB,value);
-    EXPECT_EQ(cpu.registers.A,value);
-
-    // No Modified
-    EXPECT_EQ(cpu.registers._IR,0xfc);
-    EXPECT_EQ(cpu.registers.PC,0x00);
-    EXPECT_EQ(cpu.registers.X,0x00);
-    EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers.SP,0x0100); 
-}
-
-TEST(CPU, FetchValueZeropageX) {
-    // Given
-    CPU6502::Memory memory;
-    CPU6502::CPU cpu(memory);
-    CPU6502::Byte value = CPU6502::Byte(0xA0);
-    CPU6502::Word address = CPU6502::Word(0x0001);
-
-    memory.Write(address,value);  // Write Value
-
-    // Remove when reset method is completed
-    cpu.Reset();
-
-    cpu.registers.PC = 0x00;
-    cpu.registers._TMP = address;
-    CPU6502::Byte result = cpu.FetchValueZeropageX();
-
-     // Check Result
-    EXPECT_EQ(result, value);
-
-    // Check every register
-    EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
-    EXPECT_EQ(cpu.registers._AB,address);
-    EXPECT_EQ(cpu.registers._DB,value);
-    EXPECT_EQ(cpu.registers.X,value);
-
-    // No Modified
-    EXPECT_EQ(cpu.registers._IR,0xfc);
-    EXPECT_EQ(cpu.registers.PC,0x00);
-    EXPECT_EQ(cpu.registers.A,0x00);
-    EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers.SP,0x0100); 
-}
-
-TEST(CPU, FetchValueZeropageY) {
-    // Given
-    CPU6502::Memory memory;
-    CPU6502::CPU cpu(memory);
-    CPU6502::Byte value = CPU6502::Byte(0xA0);
-    CPU6502::Word address = CPU6502::Word(0x0001);
-
-    memory.Write(address,value);  // Write Value
-
-    // Remove when reset method is completed
-    cpu.Reset();
-
-    cpu.registers.PC = 0x00;
-    cpu.registers._TMP = address;
-    CPU6502::Byte result = cpu.FetchValueZeropageY();
-
-     // Check Result
-    EXPECT_EQ(result, value);
-
-    // Check every register
-    EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
-    EXPECT_EQ(cpu.registers._AB,address);
-    EXPECT_EQ(cpu.registers._DB,value);
-    EXPECT_EQ(cpu.registers.Y,value);
 
     // No Modified
     EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.PC,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
+    EXPECT_EQ(cpu.registers.Y,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100); 
 }
 
-TEST(CPU, FetchValueZeropageIndexedX) {
+TEST(CPU, FetchValueZeropageIndexed) {
     // Given
     CPU6502::Memory memory;
     CPU6502::CPU cpu(memory);
@@ -477,7 +341,7 @@ TEST(CPU, FetchValueZeropageIndexedX) {
     cpu.registers._AB = address;
     memory.Write(address,value);  // Write Value
     
-    CPU6502::Byte result = cpu.FetchValueZeropageIndexedX();
+    CPU6502::Byte result = cpu.FetchValueZeropageIndexed();
 
      // Check Result
     EXPECT_EQ(result, value);
@@ -486,47 +350,13 @@ TEST(CPU, FetchValueZeropageIndexedX) {
     EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
     EXPECT_EQ(cpu.registers._AB,address);
     EXPECT_EQ(cpu.registers._DB,value);
-    EXPECT_EQ(cpu.registers.X,value);
-
-    // No Modified
-    EXPECT_EQ(cpu.registers._IR,0xfc);
-    EXPECT_EQ(cpu.registers.PC,0x00);
-    EXPECT_EQ(cpu.registers.A,0x00);
-    EXPECT_EQ(cpu.registers.Y,0x00);
-    EXPECT_EQ(cpu.registers._TMP,0x0000);
-    EXPECT_EQ(cpu.registers.SP,0x0100); 
-}
-
-TEST(CPU, FetchValueZeropageIndexedY) {
-    // Given
-    CPU6502::Memory memory;
-    CPU6502::CPU cpu(memory);
-    CPU6502::Byte value = CPU6502::Byte(0xA0);
-    CPU6502::Word address = CPU6502::Word(0x0001);
-
-    // Remove when reset method is completed
-    cpu.Reset();
-
-    cpu.registers.PC = 0x00;
-    cpu.registers._AB = address;
-    memory.Write(address,value);  // Write Value
-    
-    CPU6502::Byte result = cpu.FetchValueZeropageIndexedY();
-
-     // Check Result
-    EXPECT_EQ(result, value);
-
-    // Check every register
-    EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
-    EXPECT_EQ(cpu.registers._AB,address);
-    EXPECT_EQ(cpu.registers._DB,value);
-    EXPECT_EQ(cpu.registers.Y,value);
 
     // No Modified
     EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.PC,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
+    EXPECT_EQ(cpu.registers.Y,0x00);
     EXPECT_EQ(cpu.registers._TMP,0x0000);
     EXPECT_EQ(cpu.registers.SP,0x0100); 
 }

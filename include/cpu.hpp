@@ -20,11 +20,7 @@ namespace CPU6502{
 
             OperarionStepsSequenceIterator operarionStepsSequenceIterator;
 
-            Byte FetchOperandImmediate_(Byte &reg);
             Byte FetchAddressZeropage_(Byte idx);
-            Byte FetchValueZeropage_(Byte &reg);
-            Byte FetchValueZeropageIndexed_(Byte &reg); // Depends on FetchAddressZeropage
-
         public:
             Registers registers;
 
@@ -44,9 +40,7 @@ namespace CPU6502{
             Byte FetchOpcode();
 
             // Fetch Operands only Inmediate get value in same step
-            Byte FetchOperandImmediateA();
-            Byte FetchOperandImmediateX();
-            Byte FetchOperandImmediateY();
+            Byte FetchOperandImmediate();
 
             Byte FetchOperandZeropage();
 
@@ -59,14 +53,14 @@ namespace CPU6502{
             Byte FetchAddressZeropageX();
             Byte FetchAddressZeropageY();
 
-            // Fetch Values
+            // Fetch Values once two operands are fetched
             Byte FetchValueAbsolute();
-            Byte FetchValueZeropageA();
-            Byte FetchValueZeropageX();
-            Byte FetchValueZeropageY();
 
-            Byte FetchValueZeropageIndexedX(); // Depends on FetchAddressZeropage
-            Byte FetchValueZeropageIndexedY(); // Depends on FetchAddressZeropage
+            // Fetch Values once one operand is fetched
+            Byte FetchValueZeropage();
+
+            // Fetch Values once one operand is fetched
+            Byte FetchValueZeropageIndexed(); // Depends on FetchAddressZeropage
 
             void UpdateFlags();
     };
