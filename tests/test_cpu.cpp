@@ -59,7 +59,7 @@ TEST(CPU, FetchOperandImmediateA) {
      EXPECT_EQ(cpu.registers.A,value);
 
      // No Modified
-     EXPECT_EQ(cpu.registers._IR,0x00);
+     EXPECT_EQ(cpu.registers._IR,0xfc);
      EXPECT_EQ(cpu.registers.X,0x00);
      EXPECT_EQ(cpu.registers.Y,0x00);
      EXPECT_EQ(cpu.registers.SP,0x0100);
@@ -93,7 +93,7 @@ TEST(CPU, FetchOperandImmediateX) {
 
 
     // No Modified
-    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
     EXPECT_EQ(cpu.registers.SP,0x0100);
@@ -127,7 +127,7 @@ TEST(CPU, FetchOperandImmediateY) {
 
 
      // No Modified
-     EXPECT_EQ(cpu.registers._IR,0x00);
+     EXPECT_EQ(cpu.registers._IR,0xfc);
      EXPECT_EQ(cpu.registers.A,0x00);
      EXPECT_EQ(cpu.registers.X,0x00);
      EXPECT_EQ(cpu.registers.SP,0x0100);
@@ -157,7 +157,7 @@ TEST(CPU,FetchOperandZeropage) {
     EXPECT_EQ(cpu.registers.PC,address+1);
 
     // No Modified
-    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
@@ -189,7 +189,7 @@ TEST(CPU,FetchFirstOperandAbsolute) {
     EXPECT_EQ(cpu.registers._TMP,(0x00 << 8)|value);
 
     // No Modified
-    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
@@ -226,7 +226,7 @@ TEST(CPU,FetchSecondOperandAbsolute){
     EXPECT_EQ(cpu.registers._TMP,(hi_value<<8)|lo_value);   
 
     // No Modified
-    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
@@ -258,7 +258,7 @@ TEST(CPU,FecthOperanIndirect) {
     EXPECT_EQ(cpu.registers._TMP,(0x00 << 8)|value);
 
     // No Modified
-    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
@@ -289,8 +289,9 @@ TEST(CPU, FetchAddressZeropageX){
     EXPECT_EQ(cpu.registers._AB,address+offset);
     EXPECT_EQ(cpu.registers._TMP,address+offset);
     EXPECT_EQ(cpu.registers.X,offset);
-
     EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
+
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
     EXPECT_EQ(cpu.registers._DB,0x00);
@@ -321,8 +322,9 @@ TEST(CPU, FetchAddressZeropageY){
     EXPECT_EQ(cpu.registers._AB,address+offset);
     EXPECT_EQ(cpu.registers._TMP,address+offset);
     EXPECT_EQ(cpu.registers.Y,offset);
-
     EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
+
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers._DB,0x00);
@@ -353,8 +355,9 @@ TEST(CPU, FetchAddressZeropageXOverflow){
     EXPECT_EQ(cpu.registers._AB,(address+offset)-256);
     EXPECT_EQ(cpu.registers._TMP,(address+offset)-256);
     EXPECT_EQ(cpu.registers.X,offset);
-
     EXPECT_EQ(cpu.registers._RW,CPU6502::Bit::On);
+
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
     EXPECT_EQ(cpu.registers._DB,0x00);
@@ -387,7 +390,7 @@ TEST(CPU, FetchValueZeropageA) {
     EXPECT_EQ(cpu.registers.A,value);
 
     // No Modified
-    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.PC,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
@@ -420,7 +423,7 @@ TEST(CPU, FetchValueZeropageX) {
     EXPECT_EQ(cpu.registers.X,value);
 
     // No Modified
-    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.PC,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
@@ -453,7 +456,7 @@ TEST(CPU, FetchValueZeropageY) {
     EXPECT_EQ(cpu.registers.Y,value);
 
     // No Modified
-    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.PC,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);
@@ -486,7 +489,7 @@ TEST(CPU, FetchValueZeropageIndexedX) {
     EXPECT_EQ(cpu.registers.X,value);
 
     // No Modified
-    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.PC,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.Y,0x00);
@@ -520,7 +523,7 @@ TEST(CPU, FetchValueZeropageIndexedY) {
     EXPECT_EQ(cpu.registers.Y,value);
 
     // No Modified
-    EXPECT_EQ(cpu.registers._IR,0x00);
+    EXPECT_EQ(cpu.registers._IR,0xfc);
     EXPECT_EQ(cpu.registers.PC,0x00);
     EXPECT_EQ(cpu.registers.A,0x00);
     EXPECT_EQ(cpu.registers.X,0x00);

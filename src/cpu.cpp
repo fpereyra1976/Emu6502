@@ -116,7 +116,7 @@ Byte CPU::ExecuteCycle(){
         case OperationStep::FetchIndexedValue: {} break;
         case OperationStep::FetchValueAbsolute: {} break;
     }
-    return Byte(0);
+    return Byte(this->state);
 }
  
 Byte CPU::FetchOpcode(){

@@ -42,9 +42,10 @@ namespace CPU6502{
             Byte operationCode;
             AddressingMode addressingMode;
             OperarionStepsSequence steps;
+            Byte (*action)(Registers &reg, Memory &mem) = nullptr; 
         public:
-            Instruction(Byte opc, AddressingMode m ,OperarionStepsSequence s)
-                : operationCode(opc), addressingMode(m) ,steps(s) {}
+            Instruction(Byte opc, AddressingMode m ,OperarionStepsSequence s,Byte (*a)(Registers &reg, Memory &mem) = nullptr)
+                : operationCode(opc), addressingMode(m) ,steps(s), action(a) {}
     
             Byte Opcode() const { return operationCode; }
             std::vector<OperationStep>& Steps() { return steps; }
@@ -53,6 +54,9 @@ namespace CPU6502{
     using InstructionSet = std::map<Byte, Instruction>;
     using OperarionStepsSequenceIterator = OperarionStepsSequence::const_iterator;
 
+    Byte LDA(Registers &reg, Memory &mem);
+    Byte LDX(Registers &reg, Memory &mem);
+    Byte LDY(Registers &reg, Memory &mem);
 
     const Instruction RESET_SIGNAL = Instruction(
         0xFC , 
@@ -91,7 +95,8 @@ namespace CPU6502{
         { 
             OperationStep::FetchOpcode,
             OperationStep::FetchOperand, 
-        }
+        },
+        LDA
     );
 
     const Instruction LDA_ZEROPAGE = Instruction(
@@ -101,7 +106,8 @@ namespace CPU6502{
             OperationStep::FetchOpcode,
             OperationStep::FetchOperand,
             OperationStep::FetchValue 
-        }
+        },
+        LDA
     );
 
     const Instruction LDA_ZEROPAGE_X = Instruction(
@@ -112,7 +118,8 @@ namespace CPU6502{
             OperationStep::FetchOperand,
             OperationStep::FetchIndexedAddress,
             OperationStep::FetchIndexedValue 
-        }
+        },
+        LDA
     );
     
 
@@ -122,7 +129,8 @@ namespace CPU6502{
         { 
             OperationStep::FetchOpcode,
             OperationStep::FetchOperand 
-        }
+        },
+        LDX
     );
 
     const Instruction LDY_IMMEDIATE = Instruction(
@@ -131,7 +139,8 @@ namespace CPU6502{
         { 
             OperationStep::FetchOpcode,
             OperationStep::FetchOperand 
-        }
+        },
+        LDY
     );
 
     const InstructionSet INSTRUCTION_SET = {
