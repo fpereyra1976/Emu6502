@@ -9,6 +9,11 @@
 #include"exceptions.hpp"
 
 namespace CPU6502{   
+    constexpr Word STACK_START = 0x0100;
+    constexpr Word STACK_END = 0x01FF;
+    constexpr Word RESET_VECTOR = 0xFFFC;
+    constexpr Word RESET_VECTOR_ADDRESS = 0x0800;
+
     using InstructionSet = std::map<Byte, Instruction>;
 
     class CPU{
@@ -30,11 +35,19 @@ namespace CPU6502{
                 memory(memory), 
                 clockState(false) {}
 
+            void SetState(OperationStep s){
+                this->state = s;
+            }
+            
+            OperationStep GetState(){
+                return this->state;
+            }
+
             void Start();
             Byte ExecuteCycle();
 
+            // Signals
             void Reset();
-            void DoNothing();
 
             // Fetch Opcode common for all addressing modes
             Byte FetchOpcode();

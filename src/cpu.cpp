@@ -27,9 +27,11 @@ Byte CPU::ExecuteCycle(){
         case OperationStep::Reset: {
             this->Reset();
             try{
-                auto &steps = this->instructionSet.at(this->registers._IR).Steps();
+                auto &instruction = this->instructionSet.at(this->registers._IR);
+                auto &steps = instruction.Steps();
                 this->operarionStepsSequenceIterator = steps.cbegin();
                 if (this->operarionStepsSequenceIterator == steps.cend()){
+                    // This situation is not expected
                     this->state = OperationStep::FetchOpcode;
                 } else{
                     ++this->operarionStepsSequenceIterator;
@@ -46,10 +48,9 @@ Byte CPU::ExecuteCycle(){
                 auto &steps = instruction.Steps();
                 this->operarionStepsSequenceIterator = steps.cbegin();
                 if (this->operarionStepsSequenceIterator == steps.cend()){
-                    instruction.Execute(this->registers, this->memory);
+                    // This situation is not expected
                     this->state = OperationStep::FetchOpcode;
                 }else{
-                    ++this->operarionStepsSequenceIterator;
                     this->state = *this->operarionStepsSequenceIterator;  
                 }
             }catch(const std::out_of_range& e){
@@ -57,14 +58,16 @@ Byte CPU::ExecuteCycle(){
             }
         } break;
         case OperationStep::FetchOperand: {} break; 
-        case OperationStep::FetchFirstOperand: {
+        case OperationStep::FetchFirstOperandAbsolute: {
             this->FetchFirstOperandAbsolute();
             try{
                 auto &instruction = this->instructionSet.at(this->registers._IR);
                 auto &steps = instruction.Steps();
                 ++this->operarionStepsSequenceIterator;
                 if (this->operarionStepsSequenceIterator == steps.cend()){
-                    instruction.Execute(this->registers, this->memory);
+                    // This situation is not expected
+                    // because second operand is always needed
+                    // in absolute mode
                     this->state = OperationStep::FetchOpcode;
                 }else{
                     this->state = *this->operarionStepsSequenceIterator;
@@ -73,7 +76,7 @@ Byte CPU::ExecuteCycle(){
                 throw CPUException();
             }
         } break;
-        case OperationStep::FetchSecondOperand: {
+        case OperationStep::FetchSecondOperandAbsolute: {
             this->FetchSecondOperandAbsolute();
             try{
                 auto &instruction = this->instructionSet.at(this->registers._IR);
@@ -114,7 +117,7 @@ void CPU::Reset(){
     this->registers.X     = 0x00;
     this->registers.Y     = 0x00;
     this->registers.SP    = 0x0100;
-    this->registers.P     = 0x21;
+    this->registers.P     = 0x34;
     this->registers.PC    = 0xfffc;
 
     this->registers._IR   = 0xFC;
@@ -122,15 +125,7 @@ void CPU::Reset(){
     this->registers._AB   = 0x0000;
     this->registers._DB   = 0x00;
     this->registers._TMP  = 0x0000;
- }
-
- void CPU::DoNothing(){
-    // Do nothing
-    this->registers._RW = Bit::On;
-    this->registers._AB = 0x0000;
-    this->registers._DB = 0x00;
-    this->registers._TMP = 0x0000;
- }
+}
 
 Byte CPU::FetchOperandImmediate(){
     // AB ← PC, DB ← [PC], REG ← DB, PC ← PC + 1
@@ -152,6 +147,18 @@ Byte CPU::FetchOperandZeropage(){
 
     this->registers._TMP = (0x00 << 8 ) | this->registers._DB;
     this->registers.PC++;
+    return this->registers._DB;
+}
+
+Byte CPU::FetchValueZeropage(){
+    // AB ← tmp, DB ← [AB], reg ← DB
+    // Register is loaded in Instruction function
+    this->registers._RW = CPU6502::Bit::On;
+    this->registers._AB = this->registers._TMP;
+
+    Byte value = this->memory.Read(this->registers._AB);
+
+    this->registers._DB = value;
     return this->registers._DB;
 }
 
@@ -211,19 +218,6 @@ Byte CPU::FetchAddressZeropageX(){
 Byte CPU::FetchAddressZeropageY(){
     return this->FetchAddressZeropage_(this->registers.Y);
 }
-
-Byte CPU::FetchValueZeropage(){
-    // AB ← tmp, DB ← [AB], reg ← DB
-    // Register is loaded in Instruction function
-    this->registers._RW = CPU6502::Bit::On;
-    this->registers._AB = this->registers._TMP;
-
-    Byte value = this->memory.Read(this->registers._AB);
-
-    this->registers._DB = value;
-    return this->registers._DB;
-}
-
 
 Byte CPU::FetchAddressZeropage_(Byte idx){
     // tmp ← (tmp + idx) & $FF, AB ← tmp

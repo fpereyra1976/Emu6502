@@ -1,6 +1,29 @@
 #include <gtest/gtest.h>
 #include "cpu.hpp"
 
+
+TEST(CPU, Reset) {
+    // Given
+    CPU6502::Memory memory;
+    CPU6502::CPU cpu(memory);
+
+    // When
+    cpu.Reset();
+
+    // Check Result
+    EXPECT_EQ(cpu.registers._IR, 0xFC);
+    EXPECT_EQ(cpu.registers._RW, CPU6502::Bit::On);
+    EXPECT_EQ(cpu.registers._AB, 0x0000);
+    EXPECT_EQ(cpu.registers._DB, 0x00);
+    EXPECT_EQ(cpu.registers._TMP, 0x0000);
+    EXPECT_EQ(cpu.registers.PC, 0xfffc);
+    EXPECT_EQ(cpu.registers.A, 0x00);
+    EXPECT_EQ(cpu.registers.X, 0x00);
+    EXPECT_EQ(cpu.registers.Y, 0x00);
+    EXPECT_EQ(cpu.registers.SP, 0x0100);
+    EXPECT_EQ(cpu.registers.P, 0x34);
+}
+
 TEST(CPU, FetchOpcode) {
     // Given
     CPU6502::Memory memory;

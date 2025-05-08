@@ -31,8 +31,8 @@ namespace CPU6502{
                 data.fill(0);  // Inicializa todo el array con 0.
 
                 // Reset Vector
-                data[0xFFFC] = 0x00;
-                data[0xFFFD] = 0x08;
+                data[0xfffc] = 0x00;
+                data[0xfffd+1] = 0x08;
                 data[0x0800] = 0xea;
             }
 
