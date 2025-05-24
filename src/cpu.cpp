@@ -57,7 +57,23 @@ Byte CPU::ExecuteCycle(){
                 throw CPUException();
             }
         } break;
-        case OperationStep::FetchOperand: {} break; 
+        case OperationStep::FetchOperand: {
+            this->FetchOperandImmediate();
+            try{
+                auto &instruction = this->instructionSet.at(this->registers._IR);
+                auto &steps = instruction.Steps();
+                ++this->operarionStepsSequenceIterator;
+                if (this->operarionStepsSequenceIterator == steps.cend()){
+                    instruction.Execute(this->registers, this->memory);
+                    this->state = OperationStep::FetchOpcode;
+                }else{
+                    // This situation is not expected
+                    this->state = *this->operarionStepsSequenceIterator;
+                }
+            }catch(const std::out_of_range& e){
+                throw CPUException();
+            }
+        } break; 
         case OperationStep::FetchFirstOperandAbsolute: {
             this->FetchFirstOperandAbsolute();
             try{
@@ -96,6 +112,25 @@ Byte CPU::ExecuteCycle(){
         case OperationStep::FetchIndexedAddress: {} break;
         case OperationStep::FetchIndexedValue: {} break;
         case OperationStep::FetchValueAbsolute: {} break;
+        case OperationStep::Nothing:{
+            try{
+                auto &instruction = this->instructionSet.at(this->registers._IR);
+                auto &steps = instruction.Steps();
+                ++this->operarionStepsSequenceIterator;
+                if (this->operarionStepsSequenceIterator == steps.cend()){
+                    instruction.Execute(this->registers, this->memory);
+                    this->state = OperationStep::FetchOpcode;
+                }else{
+                    this->state = *this->operarionStepsSequenceIterator;
+                }
+            }catch(const std::out_of_range& e){
+                throw CPUException();
+            }
+        } break;
+        default: {
+            // This situation is not expected
+            this->state = OperationStep::FetchOpcode;
+        } break;
     }
     return Byte(this->state);
 }

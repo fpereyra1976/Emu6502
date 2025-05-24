@@ -19,6 +19,7 @@ namespace CPU6502{
         LDA_ZEROPAGE_X  = 0xB5,
         LDX_IMMEDIATE   = 0xA2,
         LDY_IMMEDIATE   = 0xA0,
+        ADC_INMEDIATE   = 0x69,
         NOP_IMPLICIT    = 0xEA,
         BRK_IMPLICIT    = 0x00
     };
@@ -33,6 +34,7 @@ namespace CPU6502{
         FetchIndexedAddress         = 0x07,
         FetchIndexedValue           = 0x08,
         FetchValueAbsolute          = 0x09,
+        Nothing                     = 0x0A,
     };
     
     using OperarionStepsSequence = std::vector<OperationStep>;
@@ -69,6 +71,8 @@ namespace CPU6502{
     Byte LDA(Registers &reg, Memory &mem);
     Byte LDX(Registers &reg, Memory &mem);
     Byte LDY(Registers &reg, Memory &mem);
+    Byte ADC(Registers &reg, Memory &mem);
+
 
     const Instruction RESET_SIGNAL = Instruction(
         Opcodes::RESET, 
@@ -90,7 +94,9 @@ namespace CPU6502{
 
     const Instruction NOP_IMPLICIT = Instruction(
         Opcodes::NOP_IMPLICIT, // opcode de LDA #immediate
-        {},
+        {
+            OperationStep::Nothing,
+        },
         NOP 
     );
 
@@ -137,18 +143,27 @@ namespace CPU6502{
         LDY
     );
 
+    const Instruction ADC_IMMEDIATE = Instruction(
+        Opcodes::ADC_INMEDIATE, // opcode de LDA #immediate
+        { 
+            OperationStep::FetchOperand 
+        },
+        ADC
+    );
+
     const InstructionSet INSTRUCTION_SET = {
         { 0x00, BRK_IMPLICIT },
         { 0xEA, NOP_IMPLICIT },
         { 0xA5, LDA_ZEROPAGE },
         { 0xB5, LDA_ZEROPAGE_X },
-        { 0xA5, LDA_IMMEDIATE },
+        { 0xA9, LDA_IMMEDIATE },
         { 0xA2, LDX_IMMEDIATE },
-        { 0xA9, LDY_IMMEDIATE },
+        { 0xA0, LDY_IMMEDIATE },
         { 0xEA, NOP_IMPLICIT },
         { 0xA9, LDA_IMMEDIATE },
         { 0xA2, LDX_IMMEDIATE },
         { 0xA9, LDY_IMMEDIATE },
+        { 0x69, ADC_IMMEDIATE },
         { 0xFC, RESET_SIGNAL }
 
         // ...
