@@ -24,6 +24,17 @@ endif
 
 TARGET = cpu
 
+.PHONY: check-gtest
+check-gtest:
+	@if ! command -v pkg-config &> /dev/null; then \
+		echo "📦 Instalando pkg-config y Google Test..."; \
+		brew install pkg-config googletest || { echo "❌ Fallo en instalación"; exit 1; }; \
+	elif ! pkg-config --exists gtest 2>/dev/null; then \
+		echo "📦 Instalando Google Test..."; \
+		brew install googletest || { echo "❌ Fallo en instalación"; exit 1; }; \
+	fi
+	@echo "✅ Google Test está disponible"
+
 all: $(TARGET) $(TEST_BIN)
 
 $(TARGET): $(OBJ)
@@ -33,8 +44,8 @@ check: $(TEST_BIN)
 	@echo "\033[1;36m[Ejecutando tests]\033[0m"
 	./$(BUILD_DIR)/$(TEST_BIN)
 
-$(TEST_BIN): $(TEST_SRC) $(OBJ)
-	$(CXX) $(CXXFLAGS) $(GTEST_INC) $^ $(GTEST_LIB) -pthread -o $(BUILD_DIR)/$@
+$(TEST_BIN): check-gtest $(TEST_SRC) $(OBJ)
+	$(CXX) $(CXXFLAGS) $(GTEST_INC) $(TEST_SRC) $(OBJ) $(GTEST_LIB) -pthread -o $(BUILD_DIR)/$@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
